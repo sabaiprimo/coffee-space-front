@@ -1,0 +1,53 @@
+{
+  "name": "c",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@material-ui/core": "^4.2.1",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/lab": "^4.0.0-alpha.39",
+    "@material-ui/pickers": "^3.2.10",
+    "@material-ui/styles": "^4.2.1",
+    "aos": "^2.3.4",
+    "clsx": "^1.0.4",
+    "history": "^4.9.0",
+    "jarallax": "^1.12.1",
+    "leaflet": "^1.6.0",
+    "material-ui-dropzone": "^3.5.0",
+    "npm": "^7.4.2",
+    "prop-types": "^15.7.2",
+    "query-string": "^6.13.7",
+    "react": "^16.13.1",
+    "react-countup": "^4.3.3",
+    "react-dom": "^16.8.6",
+    "react-lazy-load-image-component": "^1.5.0",
+    "react-leaflet": "^2.7.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "^4.0.0",
+    "react-syntax-highlighter": "^15.4.3",
+    "react-typed": "^1.2.0",
+    "react-visibility-sensor": "^5.1.1",
+    "start": "^5.1.0",
+    "styled-components": "^5.2.1",
+    "swiper": "^5.4.1",
+    "validate.js": "^0.13.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
