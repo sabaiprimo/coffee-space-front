@@ -8,7 +8,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import WithLayout from 'WithLayout';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
-// import { IndexView } from './views';
+import { IndexView, BrowseRecipe as BrowseRecipeViewView } from './views';
 
 const Routes = () => {
   return (
@@ -20,6 +20,17 @@ const Routes = () => {
           <WithLayout
             {...matchProps}
             component={IndexView}
+            layout={MainLayout}
+          />
+        )}
+      />
+      <Route
+        exact
+        path='/browse-recipe'
+        render={(matchProps) => (
+          <WithLayout
+            {...matchProps}
+            component={BrowseRecipeViewView}
             layout={MainLayout}
           />
         )}
