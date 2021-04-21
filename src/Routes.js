@@ -13,7 +13,7 @@ import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 const Routes = () => {
   return (
     <Switch>
-      {/* <Route
+      <Route
         exact
         path='/'
         render={(matchProps) => (
@@ -23,7 +23,7 @@ const Routes = () => {
             layout={MainLayout}
           />
         )}
-      /> */}
+      />
     </Switch>
   );
 };
