@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Typography,
+  Toolbar,
   IconButton,
   Grid,
   List,
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       padding: theme.spacing(12, 0),
     },
-    background: theme.palette.background.footer,
+    background: theme.palette.primary.main,
   },
   footerContainer: {
     maxWidth: theme.layout.contentWidth,
@@ -92,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
   navLink: {
     color: 'rgba(255,255,255,.6)',
   },
+  copyRight: {
+    color: 'white',
+  },
 }));
 
 const Footer = (props) => {
@@ -99,7 +103,7 @@ const Footer = (props) => {
 
   const classes = useStyles();
 
-  const landings = pages.landings;
+  const recipes = pages.recipes;
   const supportedPages = pages.pages;
   const account = pages.account;
 
@@ -128,8 +132,8 @@ const Footer = (props) => {
     );
   };
 
-  const LandingPages = () => {
-    const { services, web } = landings.children; //app
+  const RecipePages = () => {
+    const { services, web } = recipes.children; //app
     return (
       <div className={classes.menu}>
         <div>
@@ -190,7 +194,13 @@ const Footer = (props) => {
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.footerContainer}>
-        <Grid container spacing={4}>
+        <Toolbar>
+          <Typography variant='body1' className={classes.copyRight}>
+            © 2021 Tatsapat
+          </Typography>
+        </Toolbar>
+
+        {/* <Grid container spacing={4}>
           <Grid item xs={12} md={2}>
             <List disablePadding>
               <ListItem disableGutters className={classes.logoContainerItem}>
@@ -224,7 +234,7 @@ const Footer = (props) => {
           <Grid item xs={12} md={10} className={classes.menuListContainer}>
             <Grid container spacing={0}>
               <Grid item>
-                <LandingPages />
+                <RecipePages />
               </Grid>
               <Grid item>
                 <SupportedPages />
@@ -234,7 +244,7 @@ const Footer = (props) => {
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
       </div>
     </div>
   );
