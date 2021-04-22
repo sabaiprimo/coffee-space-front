@@ -1,16 +1,21 @@
 export const light = {
   alternate: {
     // main: 'rgb(247, 249, 250)',
-    main: 'rgb(247, 249, 250)',
+    main: 'rgb(253, 253, 251)',
 
-    dark: '#e8eaf6',
+    // dark: '#e8eaf6',
+    dark: 'rgb(247, 245, 238)',
   },
   cardShadow: 'rgba(23, 70, 161, .11)',
+
   type: 'light',
   primary: {
-    main: '#3f51b5',
+    // main: '#3f51b5',
+    main: 'rgb(51, 51, 51)',
+
     light: 'rgb(71, 145, 219)',
-    dark: 'rgb(17, 82, 147)',
+
+    dark: 'rgb(89,74,66)',
     contrastText: '#fff',
   },
   secondary: {

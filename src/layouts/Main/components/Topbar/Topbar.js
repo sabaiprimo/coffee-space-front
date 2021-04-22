@@ -307,7 +307,7 @@ const Topbar = ({
               variant='contained'
               component='a'
               target='blank'
-              href='/signin-simple'
+              href='/signin'
               className={classes.listItemButton}
             >
               LOG IN
@@ -321,7 +321,7 @@ const Topbar = ({
               color='primary'
               component='a'
               target='blank'
-              href='/signup-cover'
+              href='/signup'
               className={classes.listItemButton}
             >
               REGISTER NOW
