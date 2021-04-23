@@ -4,15 +4,8 @@ import { parse } from 'query-string';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, List, ListItem, Grid, Typography } from '@material-ui/core';
 import { SectionAlternate, CardBase } from 'components/organisms';
-import {
-  Hero,
-  General,
-  Security,
-  Notifications,
-  Billing,
-  SidebarNewsletter,
-} from './components';
-
+import { Hero, MainForm, GeneralInfoForm } from './components';
+import { useSelector, useDispatch } from 'react-redux';
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
@@ -72,29 +65,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const subPages = [
-//   {
-//     id: 'general',
-//     href: '/account/?pid=general',
-//     title: 'General',
-//   },
-//   {
-//     id: 'security',
-//     href: '/account/?pid=security',
-//     title: 'Security',
-//   },
-//   {
-//     id: 'notifications',
-//     href: '/account/?pid=notifications',
-//     title: 'Notifications',
-//   },
-//   {
-//     id: 'billing',
-//     href: '/account/?pid=billing',
-//     title: 'Billing Information',
-//   },
-// ];
-
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -116,19 +86,13 @@ const CreateRecipe = (props = {}) => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
             <CardBase withShadow align='left'>
-              <General />
+              <MainForm />
             </CardBase>
           </Grid>
           <Grid item xs={12} md={4}>
-            <SidebarNewsletter className={classes.sidebarNewsletter} />
+            <GeneralInfoForm className={classes.sidebarNewsletter} />
           </Grid>
         </Grid>
-        {/* <Grid container spacing={4}>
-          <Grid item xs={12} md={9}></Grid>
-          <CardBase withShadow align='right'>
-            <SidebarNewsletter className={classes.sidebarNewsletter} />
-          </CardBase>
-        </Grid> */}
       </SectionAlternate>
     </div>
   );

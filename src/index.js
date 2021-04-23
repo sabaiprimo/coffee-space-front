@@ -11,6 +11,8 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { render } from 'react-dom';
 import { ApolloProvider } from '@apollo/client/react';
 import { gql } from 'apollo-boost';
+import { store } from './app/store';
+import { Provider } from 'react-redux';
 
 const client = new ApolloClient({
   uri: 'https://localhost:8000/graphql',
@@ -18,9 +20,12 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <Provider store={store}>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </Provider>,
+
   document.getElementById('root')
 );
 

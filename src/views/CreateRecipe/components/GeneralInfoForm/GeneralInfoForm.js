@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Form = (props) => {
+const GeneralInfoForm = (props) => {
   const { className, ...rest } = props;
   const classes = useStyles();
 
@@ -196,11 +196,11 @@ const Form = (props) => {
   );
 };
 
-Form.propTypes = {
+GeneralInfoForm.propTypes = {
   /**
    * External classes
    */
   className: PropTypes.string,
 };
 
-export default Form;
+export default GeneralInfoForm;

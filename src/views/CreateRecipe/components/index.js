@@ -1,6 +1,3 @@
+export { default as MainForm } from './MainForm';
 export { default as Hero } from './Hero';
-export { default as General } from './General';
-export { default as Security } from './Security';
-export { default as Notifications } from './Notifications';
-export { default as Billing } from './Billing';
-export { default as SidebarNewsletter } from './SidebarNewsletter';
+export { default as GeneralInfoForm } from './GeneralInfoForm';

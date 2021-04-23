@@ -10,6 +10,56 @@ import {
   Divider,
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
+import { gql, useQuery } from '@apollo/client';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  incrementStep,
+  setTitle,
+  setDescription,
+  setPreparationTime,
+  setTotalTime,
+  setServing,
+  setRoastlevel,
+  setLevel,
+  setIngredient,
+  setEquipment,
+  setDirection,
+} from '../../../../features/recipe/recipeReducer';
+
+const CREATE_RECIPE = gql`
+  mutation createRecipe(
+    $title: String
+    $description: String
+    $preparationTime: Float
+    $totalTime: Float
+    $serving: Int
+    $roastLevel: String
+    $level: String
+    $ingredient: String
+    $equipment: String
+    $directions: [DirectionInput]
+    $author: ID!
+    $images: [ImageInput]
+  ) {
+    addRecipe(
+      title: $title
+      description: $description
+      preparationTime: $preparationTime
+      totalTime: $totalTime
+      serving: $serving
+      roastLevel: $roastLevel
+      level: $level
+      ingredient: $ingredient
+      equipment: $equipment
+      directions: $directions
+      author: $author
+      images: $images
+    ) {
+      _id
+      title
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   inputTitle: {
@@ -50,16 +100,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const General = (props) => {
+const MainForm = (props) => {
   const { className, ...rest } = props;
   const classes = useStyles();
 
+  // const count = useSelector(selectStep);
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
   const [count, setCount] = useState(1);
   const steps = [];
+  const [fileObjects, setFileObjects] = React.useState([]);
+  // const [title, setTitle] = useState('');
+  // const [description, setDescription] = useState('');
+  // const [preparationTime, setPreparationTime] = useState('');
+  // const [totalTime, setTotalTime] = useState('');
+  // const [serving, setServing] = useState('');
+  // const [roastLevel, setRoastlevel] = useState('');
+  // const [level, setLevel] = useState('');
+  // const [ingredient, setIngredient] = useState('');
+  // const [equipment, setEquipment] = useState('');
+  // const [directions, setDirection] = useState('');
+  // const [images, setImages] = useState('');
+
+  // title: $title
+  // description: $description;
+  // preparationTime: $preparationTime;
+  // totalTime: $totalTime;
+  // serving: $serving;
+  // roastLevel: $roastLevel;
+  // level: $level;
+  // ingredient: $ingredient;
+  // equipment: $equipment;
+  // directions: $directions;
+  // author: $author;
+  // images: $images;
+  // const [createRecipe] = useMutation(CREATE_RECIPE);
+  // const submit = (event) => {
+  //   event.preventDefault();
+
+  //   createRecipes({ variables: { name, phone, street, city } });
+
+  //   setName('');
+  //   setPhone('');
+  //   setStreet('');
+  //   setCity('');
+  // };
 
   for (let i = 1; i <= count; i++) {
     steps.push(
@@ -99,6 +187,7 @@ const General = (props) => {
           <div className={classes.bgBlue}>
             <div className={classes.form}>
               <TextField
+                onChange={({ target }) => dispatch(setTitle(target.value))}
                 placeholder='recipe name'
                 variant='outlined'
                 size='medium'
@@ -121,6 +210,7 @@ const General = (props) => {
           <div className={classes.bgBlue}>
             <div className={classes.form}>
               <TextField
+                onChange={({ target }) => dispatch(setIngredient(target.value))}
                 placeholder='ingredients'
                 variant='outlined'
                 name='bio'
@@ -143,6 +233,7 @@ const General = (props) => {
           <div className={classes.bgBlue}>
             <div className={classes.form}>
               <TextField
+                onChange={({ target }) => dispatch(setEquipment(target.value))}
                 placeholder='equipments'
                 variant='outlined'
                 name='bio'
@@ -170,6 +261,7 @@ const General = (props) => {
               variant='outlined'
               className={classes.addStepButton}
               onClick={() => setCount(count + 1)}
+              // onChange={({ target }) => setDirection(target.value)}
             >
               Add more step
             </Button>
@@ -208,7 +300,9 @@ const General = (props) => {
           </Typography>
           <div className={classes.bgBlue}>
             <div className={classes.form}>
-              <DropzoneArea />
+              <DropzoneArea
+                onChange={(files) => console.log('Files:', files)}
+              />
             </div>
           </div>
         </Grid>
@@ -227,11 +321,11 @@ const General = (props) => {
   );
 };
 
-General.propTypes = {
+MainForm.propTypes = {
   /**
    * External classes
    */
   className: PropTypes.string,
 };
 
-export default General;
+export default MainForm;
