@@ -97,7 +97,7 @@ const Recipes = (props) => {
               mediaContent={
                 <>
                   <Image
-                    {...item.image}
+                    {...item.images[0]}
                     alt={item.title}
                     lazyProps={{ width: '100%', height: '100%' }}
                     className={classes.image}
@@ -134,7 +134,9 @@ const Recipes = (props) => {
                       src={icon1}
                       alt='Facebook'
                     />
-                    <p className={classes.generalInfo}>15 mins</p>
+                    <p className={classes.generalInfo}>
+                      {item.preparationTime} mins
+                    </p>
 
                     <img
                       style={{
@@ -143,7 +145,7 @@ const Recipes = (props) => {
                       src={icon2}
                       alt='Facebook'
                     />
-                    <p className={classes.generalInfo}>30 mins</p>
+                    <p className={classes.generalInfo}>{item.totalTime} mins</p>
 
                     <img
                       style={{
@@ -152,7 +154,7 @@ const Recipes = (props) => {
                       src={icon3}
                       alt='Facebook'
                     />
-                    <p className={classes.generalInfo}>1 cup</p>
+                    <p className={classes.generalInfo}>{item.serving} cup</p>
 
                     <img
                       style={{
@@ -161,7 +163,7 @@ const Recipes = (props) => {
                       src={icon4}
                       alt='Facebook'
                     />
-                    <p className={classes.generalInfo}>Beginner</p>
+                    <p className={classes.generalInfo}>{item.level}</p>
 
                     <img
                       style={{
@@ -170,7 +172,7 @@ const Recipes = (props) => {
                       src={icon5}
                       alt='Facebook'
                     />
-                    <p className={classes.generalInfo}>Light Roast</p>
+                    <p className={classes.generalInfo}>{item.roastLevel}</p>
                   </div>
 
                   <Grid item xs={12}>
@@ -183,7 +185,7 @@ const Recipes = (props) => {
                       {item.title}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Typography
                       variant='body1'
                       color='textSecondary'
@@ -191,8 +193,8 @@ const Recipes = (props) => {
                     >
                       {item.address}
                     </Typography>
-                  </Grid>
-                  <Grid item container justify='space-between' xs={12}>
+                  </Grid> */}
+                  {/* <Grid item container justify='space-between' xs={12}>
                     <Grid item container xs={6} wrap='nowrap'>
                       {item.reviews.map((review, index) => (
                         <Avatar
@@ -235,7 +237,7 @@ const Recipes = (props) => {
                         ({item.reviewCount} reviews)
                       </Typography>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12}>
                     <LearnMoreLink

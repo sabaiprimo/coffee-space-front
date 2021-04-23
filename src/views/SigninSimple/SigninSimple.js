@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Form } from './components';
 import { LearnMoreLink } from 'components/atoms';
 import { SectionHeader } from 'components/molecules';
 import { Section } from 'components/organisms';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -24,7 +25,13 @@ const useStyles = makeStyles((theme) => ({
 
 const SigninSimple = () => {
   const classes = useStyles();
-
+  const history = useHistory();
+  const [formState, setFormState] = useState({
+    login: true,
+    email: '',
+    password: '',
+    name: '',
+  });
   return (
     <div>
       <Section className={classes.section}>
