@@ -3,6 +3,26 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, Button, TextField } from '@material-ui/core';
 import validate from 'validate.js';
 import { LearnMoreLink } from 'components/atoms';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
+
+const REGISTER_USER = gql`
+  mutation registerUser(
+    $email: String!
+    $password: String!
+    $firstName: String!
+    $lastName: String!
+    $displayName: String!
+  ) {
+    register(
+      email: $email
+      password: $password
+      firstName: $firstName
+      lastName: $lastName
+      displayName: $displayName
+    )
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +83,16 @@ const Form = () => {
       errors: errors || {},
     }));
   }, [formState.values]);
+  const [registerUser, result] = useMutation(REGISTER_USER);
+
+  React.useEffect(() => {
+    if (result.data) {
+      // console.log(result.data);
+      const token = result.data.register;
+      console.log(token);
+      localStorage.setItem('token', token);
+    }
+  }, [result.data]);
 
   const handleChange = (event) => {
     event.persist();
@@ -87,6 +117,24 @@ const Form = () => {
     event.preventDefault();
 
     if (formState.isValid) {
+      // console.log(formState);
+      const {
+        email,
+        password,
+        lastName,
+        firstName,
+        displayName,
+      } = formState.values;
+      // console.log(email);
+      registerUser({
+        variables: {
+          email,
+          password,
+          lastName,
+          firstName,
+          displayName,
+        },
+      });
       window.location.replace('/');
     }
 

@@ -7,11 +7,7 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
-import {
-  loginUser,
-  userSelector,
-  clearState,
-} from '../../../../features/user/UserSlice';
+
 import { useLazyQuery } from '@apollo/client';
 // import toast from 'react-hot-toast';
 // import { useHistory } from 'react-router-dom';

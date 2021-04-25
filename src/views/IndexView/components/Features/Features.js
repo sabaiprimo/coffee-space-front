@@ -13,42 +13,42 @@ const useStyles = makeStyles(() => ({
 const data = [
   {
     icon: 'fas fa-cubes',
-    color: 'rgb(177,150,141)',
+    color: colors.brown,
     title: 'Is Coffee Good for You?',
     subtitle:
       'Yes! But it depends on the kind of coffee and the quantity. We’ve come a long way from the cans of Folgers that filled our grandparents’ cupboards, with our oat milk lattes, cold brews and Frappuccinos. Some of us are still very utilitarian about the drink while others perform elaborate rituals...',
   },
   {
     icon: 'fas fa-palette',
-    color: 'rgb(177,150,141)',
+    color: colors.brown,
     title: 'Health benefits and risks of drinking coffee',
     subtitle:
       'When people think of coffee, they usually think of its ability to provide an energy boost. However, according to some research, it can also offer some other important health benefits, such as a lower risk of liver cancer...',
   },
   {
     icon: 'fas fa-code',
-    color: 'rgb(177,150,141)',
+    color: colors.brown,
     title: 'Interesting coffee facts',
     subtitle:
       'The aroma of coffee contains more than 700 substances, and it is rich in caffeine. The original home of coffee…',
   },
   {
     icon: 'fas fa-moon',
-    color: 'rgb(177,150,141)',
+    color: colors.brown,
     title: 'Coffee from Nicaragua',
     subtitle:
       'Only Arabica coffee is grown in Nicaragua. The production area occupying more than 100 thousand hectares takes place primarily in…',
   },
   {
     icon: 'fas fa-rocket',
-    color: 'rgb(177,150,141)',
+    color: colors.brown,
     title: 'Two Famous Coffee Museums',
     subtitle:
       'We will discuss two interesting coffee museums on two different continents. The first will be a museum of one of the great powers of coffee, Brazil. The other, also a prestigious museum, is in Austria...',
   },
   {
     icon: 'fas fa-hand-holding-heart',
-    color: 'rgb(177,150,141)',
+    color: colors.brown,
     title: 'Coffee’s Influence on the Different Art Forms',
     subtitle:
       'Can a drink be synonymous with aesthetics? The question may seem a little bit strange. Taking some artistic forms, coffee…',

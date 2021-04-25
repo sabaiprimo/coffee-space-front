@@ -21,6 +21,8 @@ import {
   SignupCover as SignupCoverView,
 } from './views';
 import { gql, useQuery } from '@apollo/client';
+import { setUserProfile } from './features/user/UserSlice.js';
+import { useSelector, useDispatch } from 'react-redux';
 
 const GET_USER_PROFILE = gql`
   query getUserProfile {
@@ -30,12 +32,15 @@ const GET_USER_PROFILE = gql`
       firstName
       lastName
       pictureProfile
+      displayName
     }
   }
 `;
 const Routes = () => {
+  const dispatch = useDispatch();
   const { loading, error, data } = useQuery(GET_USER_PROFILE);
   if (loading) return 'Loading...';
+  dispatch(setUserProfile(data));
   console.log(data);
   // useEffect(() => {
   //   dispatch(fetchUserBytoken({ token: localStorage.getItem('token') }));

@@ -10,91 +10,6 @@ const PROFILE_QUERY = gql`
   }
 `;
 
-export const signupUser = createAsyncThunk(
-  'users/registerUser',
-  async ({ name, email, password }, thunkAPI) => {
-    try {
-      // graphql register
-      const response = await fetch(
-        'https://mock-user-auth-server.herokuapp.com/api/v1/users',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-          }),
-        }
-      );
-      let data = await response.json();
-      console.log('data', data);
-
-      if (response.status === 200) {
-        localStorage.setItem('token', data.token);
-        return { ...data, username: name, email: email };
-      } else {
-        return thunkAPI.rejectWithValue(data);
-      }
-    } catch (e) {
-      console.log('Error', e.response.data);
-      return thunkAPI.rejectWithValue(e.response.data);
-    }
-  }
-);
-
-export const loginUser = createAsyncThunk(
-  'users/login',
-  async (data, thunkAPI) => {
-    try {
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        return data;
-      } else {
-        return thunkAPI.rejectWithValue(data);
-      }
-    } catch (e) {
-      console.log('Error', e.response.data);
-      thunkAPI.rejectWithValue(e.response.data);
-    }
-  }
-);
-
-// export const fetchUserBytoken = createAsyncThunk(
-//   'users/fetchUserByToken',
-//   async ({ token }, thunkAPI) => {
-//     try {
-//       //graphql fetch user with token
-//       // const response = await fetch(
-//       //   'https://mock-user-auth-server.herokuapp.com/api/v1/users',
-//       //   {
-//       //     method: 'GET',
-//       //     headers: {
-//       //       Accept: 'application/json',
-//       //       Authorization: token,
-//       //       'Content-Type': 'application/json',
-//       //     },
-//       //   }
-//       // );
-//       const { data } = await useQuery(PROFILE_QUERY);
-//       // let data = await response.json();
-//       console.log('data', data);
-
-//       if (response.status === 200) {
-//         return { ...data };
-//       } else {
-//         return thunkAPI.rejectWithValue(data);
-//       }
-//     } catch (e) {
-//       console.log('Error', e.response.data);
-//       return thunkAPI.rejectWithValue(e.response.data);
-//     }
-//   }
-// );
-
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -102,25 +17,44 @@ export const userSlice = createSlice({
     email: '',
     firstName: '',
     lastName: '',
-    pirctureProfile: '',
+    displayName: '',
+    pictureProfile: '',
+    tempUploadProfile: '',
     isFetching: false,
     isSuccess: false,
     isError: false,
     errorMessage: '',
   },
   reducers: {
-    fetchUserBytoken: (state, { payload }) => {
-      state.email = paylaod.email;
+    setUserProfile: (state, action) => {
+      // console.log(action);
+      const payload = action.payload.me;
+      state._id = payload._id;
+      state.email = payload.email;
+      state.displayName = payload.displayName;
       state.firstName = payload.firstName;
       state.lastName = payload.lastName;
-      state.pirctureProfile = payload.pirctureProfile;
+      state.pictureProfile = payload.pictureProfile;
+    },
+    setTempUploadProfile: (state, { payload }) => {
+      state.tempUploadProfile = payload;
     },
     clearState: (state) => {
       state.isError = false;
       state.isSuccess = false;
       state.isFetching = false;
-
       return state;
+    },
+    clearTempUploadProfile: (state) => {
+      state.tempUploadProfile = '';
+    },
+    clearUserData: (state) => {
+      state._id = '';
+      state.email = '';
+      state.displayName = '';
+      state.firstName = '';
+      state.lastName = '';
+      state.pictureProfile = '';
     },
   },
   // extraReducers: {
@@ -173,6 +107,12 @@ export const userSlice = createSlice({
   // },
 });
 
-export const { clearState } = userSlice.actions;
+export const {
+  clearState,
+  setUserProfile,
+  clearUserData,
+  setTempUploadProfile,
+  clearTempUploadProfile,
+} = userSlice.actions;
 
 export const userSelector = (state) => state.user;

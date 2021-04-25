@@ -10,7 +10,8 @@ import {
   Divider,
 } from '@material-ui/core';
 import AvatarUpload from '../AvatarUpload/AvatarUpload.js';
-
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../../../features/user/UserSlice';
 const useStyles = makeStyles((theme) => ({
   inputTitle: {
     fontWeight: 700,
@@ -21,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
 const General = (props) => {
   const { className, ...rest } = props;
   const classes = useStyles();
-
+  const { firstName, lastName, displayName, pictureProfile } = useSelector(
+    userSelector
+  );
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
@@ -47,15 +50,16 @@ const General = (props) => {
             color='textPrimary'
             className={classes.inputTitle}
           >
-            Full name
+            First name
           </Typography>
           <TextField
-            placeholder='Your full name'
+            placeholder='Your first name'
             variant='outlined'
             size='medium'
-            name='fullname'
+            name='firstName'
             fullWidth
             type='text'
+            value={firstName}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -64,69 +68,16 @@ const General = (props) => {
             color='textPrimary'
             className={classes.inputTitle}
           >
-            E-mail
+            Last name
           </Typography>
           <TextField
-            placeholder='Your e-mail address'
+            placeholder='Your last name'
             variant='outlined'
             size='medium'
-            name='email'
-            fullWidth
-            type='email'
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography
-            variant='subtitle1'
-            color='textPrimary'
-            className={classes.inputTitle}
-          >
-            Bio
-          </Typography>
-          <TextField
-            placeholder='Your bio'
-            variant='outlined'
-            name='bio'
-            fullWidth
-            multiline
-            rows={4}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Typography
-            variant='subtitle1'
-            color='textPrimary'
-            className={classes.inputTitle}
-          >
-            Country
-          </Typography>
-          <TextField
-            placeholder='Country'
-            variant='outlined'
-            size='medium'
-            name='country'
+            name='lastName'
             fullWidth
             type='text'
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Typography
-            variant='subtitle1'
-            color='textPrimary'
-            className={classes.inputTitle}
-          >
-            City
-          </Typography>
-          <TextField
-            placeholder='City'
-            variant='outlined'
-            size='medium'
-            name='city'
-            fullWidth
-            type='text'
+            value={lastName}
           />
         </Grid>
         <Grid item xs={12}>
@@ -135,15 +86,16 @@ const General = (props) => {
             color='textPrimary'
             className={classes.inputTitle}
           >
-            Full Address
+            Display Name
           </Typography>
           <TextField
-            placeholder='Your address'
+            placeholder='Your display name'
             variant='outlined'
             size='medium'
             name='address'
             fullWidth
             type='text'
+            value={displayName}
           />
         </Grid>
         <Grid item container justify='flex-start' xs={12}>

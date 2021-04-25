@@ -29,7 +29,7 @@ const IndexView = ({ themeMode }) => {
   return (
     <div>
       <Hero themeMode={themeMode} />
-      <BrowseRecipe themeMode={themeMode} />
+      <BrowseRecipe />
       {/* <Services /> */}
       {/* <SectionAlternate className={classes.sectionAlternateNoPaddingTop}>
         <QuickStart />

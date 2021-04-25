@@ -7,7 +7,13 @@ import {
 import { spacing } from '@material-ui/system';
 import React, { createRef, useState } from 'react';
 import styled from 'styled-components';
-
+import { uploadService } from '../../../../helpers/utils';
+import {
+  setTempUploadProfile,
+  clearTempUploadProfile,
+} from '../../../../features/user/UserSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { userSelector } from '../../../../features/user/UserSlice';
 const Button = styled(MuiButton)(spacing);
 const UploadIcon = styled(MuiCloudUpload)(spacing);
 const DeleteIcon = styled(MuiDelete)(spacing);
@@ -29,37 +35,52 @@ const BigAvatar = styled(Avatar)`
 `;
 
 // const AvatarUpload = () => {
-const image = null;
-const inputFileRef = createRef(null);
-
-const cleanup = () => {
-  URL.revokeObjectURL(image);
-  inputFileRef.current.value = null;
-};
-
-//   const setImage = (newImage) => {
-//     if (image) {
-//       cleanup();
-//     }
-//     _setImage(newImage);
-//   };
-
-const handleOnChange = (event) => {
-  const newImage = event.target?.files?.[0];
-
-  if (newImage) {
-    setImage(URL.createObjectURL(newImage));
-  }
-};
-
-const handleClick = (event) => {
-  if (image) {
-    event.preventDefault();
-    setImage(null);
-  }
-};
 
 const AvatarUploadCom = () => {
+  // const image = null;
+  const inputFileRef = createRef(null);
+  const dispatch = useDispatch();
+  let { pictureProfile } = useSelector(userSelector);
+  let tempUploadProfile;
+  if (pictureProfile !== '') {
+    tempUploadProfile = pictureProfile;
+  } else {
+    tempUploadProfile = null;
+  }
+  const [image, _setImage] = React.useState(tempUploadProfile);
+
+  const cleanup = () => {
+    URL.revokeObjectURL(image);
+    inputFileRef.current.value = null;
+  };
+
+  const setImage = (newImage) => {
+    if (image) {
+      cleanup();
+    }
+    console.log(newImage);
+    _setImage(newImage);
+  };
+
+  const handleOnChange = async (event) => {
+    const newImage = event.target?.files?.[0];
+
+    if (newImage) {
+      setImage(URL.createObjectURL(newImage));
+      const result = await uploadService(newImage);
+      const imageURL = result.data.fileLocation;
+      console.log(imageURL);
+      dispatch(setTempUploadProfile(imageURL));
+    }
+  };
+
+  const handleClick = (event) => {
+    if (image) {
+      event.preventDefault();
+      dispatch(clearTempUploadProfile());
+      setImage(null);
+    }
+  };
   return (
     <CenteredContent>
       <BigAvatar

@@ -12,18 +12,18 @@ import { gql } from 'apollo-boost';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
 import { client } from './helpers/apollo';
+
 // const client = new ApolloClient({
 //   uri: 'https://localhost:8000/graphql',
 //   cache: new InMemoryCache(),
 // });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <Provider store={store}>
+  <Provider store={store}>
+    <ApolloProvider client={client}>
       <App />
-    </Provider>
-  </ApolloProvider>,
-
+    </ApolloProvider>
+  </Provider>,
   document.getElementById('root')
 );
 

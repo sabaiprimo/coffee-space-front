@@ -27,6 +27,7 @@ import {
   setDirection,
 } from '../../../../features/recipe/recipeReducer';
 import axios from 'axios';
+import { uploadFiles } from '../../../../helpers/utils';
 
 const CREATE_RECIPE = gql`
   mutation createRecipe(
@@ -100,39 +101,6 @@ const MainForm = (props) => {
   const { className, ...rest } = props;
   const classes = useStyles();
   const [filesObj, setFiles] = useState([]);
-  const uploadService = async (file) => {
-    let formData = new FormData();
-    // console.log(file);
-    formData.append('image', file, file.name);
-    // console.log(formData.image);
-    return await axios({
-      method: 'post',
-      url: 'https://localhost:8000/api/upload',
-      data: formData,
-      // headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  };
-  // Upload part
-  const upload = (idx, file) => {
-    // console.log(file);
-    const data = uploadService(file);
-    return data;
-  };
-  const uploadFiles = () => {
-    const files = Array.from(filesObj);
-    // console.log(files);
-    let imageLinks = [];
-    // const uploadPromises =
-
-    Promise.all(
-      files.map(async (file, i) => {
-        let uploadImage = await upload(i, file);
-        imageLinks.push(uploadImage.data.fileLocation);
-      })
-    ).then(console.log('upload finish', imageLinks));
-
-    // setMessage([]);
-  };
   // const count = useSelector(selectStep);
   const dispatch = useDispatch();
   const theme = useTheme();
