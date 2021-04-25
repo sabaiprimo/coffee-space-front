@@ -26,12 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const SigninSimple = () => {
   const classes = useStyles();
   const history = useHistory();
-  const [formState, setFormState] = useState({
-    login: true,
-    email: '',
-    password: '',
-    name: '',
-  });
+
   return (
     <div>
       <Section className={classes.section}>

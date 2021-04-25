@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useForm } from 'react-hook-form';
 import {
   useMediaQuery,
   Grid,
@@ -25,6 +26,7 @@ import {
   setEquipment,
   setDirection,
 } from '../../../../features/recipe/recipeReducer';
+import axios from 'axios';
 
 const CREATE_RECIPE = gql`
   mutation createRecipe(
@@ -74,15 +76,9 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     marginTop: '1rem',
     height: '2rem',
-    // display: 'inline-block',
-    // padding: '10px 30px',
+
     background: '#f1f1f1',
     color: 'black',
-    // textDecoration: 'none',
-    // textTransform: 'uppercase',
-    // // text-decoration: none;
-    // // text-transform: uppercase;
-    // border: '1px solid #000',
   },
   bgBlue: {
     padding: '1.5rem 1.5rem',
@@ -103,7 +99,40 @@ const useStyles = makeStyles((theme) => ({
 const MainForm = (props) => {
   const { className, ...rest } = props;
   const classes = useStyles();
+  const [filesObj, setFiles] = useState([]);
+  const uploadService = async (file) => {
+    let formData = new FormData();
+    // console.log(file);
+    formData.append('image', file, file.name);
+    // console.log(formData.image);
+    return await axios({
+      method: 'post',
+      url: 'https://localhost:8000/api/upload',
+      data: formData,
+      // headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  };
+  // Upload part
+  const upload = (idx, file) => {
+    // console.log(file);
+    const data = uploadService(file);
+    return data;
+  };
+  const uploadFiles = () => {
+    const files = Array.from(filesObj);
+    // console.log(files);
+    let imageLinks = [];
+    // const uploadPromises =
 
+    Promise.all(
+      files.map(async (file, i) => {
+        let uploadImage = await upload(i, file);
+        imageLinks.push(uploadImage.data.fileLocation);
+      })
+    ).then(console.log('upload finish', imageLinks));
+
+    // setMessage([]);
+  };
   // const count = useSelector(selectStep);
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -112,42 +141,6 @@ const MainForm = (props) => {
   });
   const [count, setCount] = useState(1);
   const steps = [];
-  const [fileObjects, setFileObjects] = React.useState([]);
-  // const [title, setTitle] = useState('');
-  // const [description, setDescription] = useState('');
-  // const [preparationTime, setPreparationTime] = useState('');
-  // const [totalTime, setTotalTime] = useState('');
-  // const [serving, setServing] = useState('');
-  // const [roastLevel, setRoastlevel] = useState('');
-  // const [level, setLevel] = useState('');
-  // const [ingredient, setIngredient] = useState('');
-  // const [equipment, setEquipment] = useState('');
-  // const [directions, setDirection] = useState('');
-  // const [images, setImages] = useState('');
-
-  // title: $title
-  // description: $description;
-  // preparationTime: $preparationTime;
-  // totalTime: $totalTime;
-  // serving: $serving;
-  // roastLevel: $roastLevel;
-  // level: $level;
-  // ingredient: $ingredient;
-  // equipment: $equipment;
-  // directions: $directions;
-  // author: $author;
-  // images: $images;
-  // const [createRecipe] = useMutation(CREATE_RECIPE);
-  // const submit = (event) => {
-  //   event.preventDefault();
-
-  //   createRecipes({ variables: { name, phone, street, city } });
-
-  //   setName('');
-  //   setPhone('');
-  //   setStreet('');
-  //   setCity('');
-  // };
 
   for (let i = 1; i <= count; i++) {
     steps.push(
@@ -165,6 +158,7 @@ const MainForm = (props) => {
       </Grid>
     );
   }
+
   return (
     <div className={className} {...rest}>
       <Grid container spacing={isMd ? 4 : 2}>
@@ -272,24 +266,6 @@ const MainForm = (props) => {
           <Divider />
         </Grid>
 
-        {/* <Grid item xs={12} sm={6}>
-          <Typography
-            variant='subtitle1'
-            color='textPrimary'
-            className={classes.inputTitle}
-          >
-            City
-          </Typography>
-          <TextField
-            placeholder='City'
-            variant='outlined'
-            size='medium'
-            name='city'
-            fullWidth
-            type='text'
-          />
-        </Grid> */}
-
         <Grid item xs={12}>
           <Typography
             variant='subtitle1'
@@ -300,9 +276,7 @@ const MainForm = (props) => {
           </Typography>
           <div className={classes.bgBlue}>
             <div className={classes.form}>
-              <DropzoneArea
-                onChange={(files) => console.log('Files:', files)}
-              />
+              <DropzoneArea onChange={(files) => setFiles(files)} />
             </div>
           </div>
         </Grid>
@@ -312,6 +286,7 @@ const MainForm = (props) => {
             type='submit'
             color='primary'
             size='large'
+            onClick={uploadFiles}
           >
             Create
           </Button>

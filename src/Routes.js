@@ -20,8 +20,29 @@ import {
   SigninSimple as SigninSimpleView,
   SignupCover as SignupCoverView,
 } from './views';
+import { gql, useQuery } from '@apollo/client';
 
+const GET_USER_PROFILE = gql`
+  query getUserProfile {
+    me {
+      _id
+      email
+      firstName
+      lastName
+      pictureProfile
+    }
+  }
+`;
 const Routes = () => {
+  const { loading, error, data } = useQuery(GET_USER_PROFILE);
+  if (loading) return 'Loading...';
+  console.log(data);
+  // useEffect(() => {
+  //   dispatch(fetchUserBytoken({ token: localStorage.getItem('token') }));
+  // }, []);
+
+  // const { username, email } = useSelector(userSelector);
+
   return (
     <Switch>
       <Route

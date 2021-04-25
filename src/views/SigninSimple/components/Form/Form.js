@@ -3,12 +3,32 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, Button, TextField } from '@material-ui/core';
 import validate from 'validate.js';
 import { LearnMoreLink } from 'components/atoms';
-
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { useSelector, useDispatch } from 'react-redux';
+import { gql, useQuery } from '@apollo/client';
+import {
+  loginUser,
+  userSelector,
+  clearState,
+} from '../../../../features/user/UserSlice';
+import { useLazyQuery } from '@apollo/client';
+// import toast from 'react-hot-toast';
+// import { useHistory } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
   },
 }));
+const LOGIN_USER = gql`
+  query loginUser($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      _id
+      email
+      token
+    }
+  }
+`;
 
 const schema = {
   email: {
@@ -28,7 +48,7 @@ const schema = {
 
 const Form = () => {
   const classes = useStyles();
-
+  const dispatch = useDispatch();
   const [formState, setFormState] = React.useState({
     isValid: false,
     values: {},
@@ -36,13 +56,11 @@ const Form = () => {
     errors: {},
   });
 
-  // const history = useHistory();
-  // const [formState, setFormState] = useState({
-  //   login: true,
-  //   email: '',
-  //   password: '',
-  //   name: '',
-  // });
+  const [loginUser, result] = useLazyQuery(LOGIN_USER, {
+    onCompleted: (data) => {
+      console.log(data);
+    },
+  });
 
   React.useEffect(() => {
     const errors = validate(formState.values, schema);
@@ -53,6 +71,15 @@ const Form = () => {
       errors: errors || {},
     }));
   }, [formState.values]);
+
+  React.useEffect(() => {
+    if (result.data) {
+      const token = result.data.login.token;
+      console.log(token);
+      // setToken(token);
+      localStorage.setItem('token', token);
+    }
+  }, [result.data]);
 
   const handleChange = (event) => {
     event.persist();
@@ -76,10 +103,14 @@ const Form = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // if (formState.isValid) {
-    //   window.location.replace('/');
-    // }
-    console.log(formState);
+    if (formState.isValid) {
+      const email = formState.values.email;
+      const password = formState.values.password;
+
+      loginUser({ variables: { email, password } });
+
+      // window.location.replace('/');
+    }
 
     setFormState((formState) => ({
       ...formState,
