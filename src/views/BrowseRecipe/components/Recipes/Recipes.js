@@ -241,7 +241,7 @@ const Recipes = (props) => {
 
                   <Grid item xs={12}>
                     <LearnMoreLink
-                      href='/single-recipe'
+                      href={'/single-recipe/' + item._id}
                       title='Learn more'
                       variant='body1'
                       color='primary'

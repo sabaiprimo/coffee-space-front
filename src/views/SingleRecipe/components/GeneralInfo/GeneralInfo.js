@@ -42,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const VideoSection = (props) => {
-  const { className, ...rest } = props;
+const GeneralInfo = (props) => {
+  const { data, className, ...rest } = props;
   const classes = useStyles();
 
   const theme = useTheme();
@@ -57,11 +57,11 @@ const VideoSection = (props) => {
         title={
           <span>
             <Typography component='span' variant='inherit' color='primary'>
-              Cafe Latte
+              {data.title}
             </Typography>
           </span>
         }
-        subtitle="This is for all fellow coffee drinkers. I love lattes but buying them can be pricey. So here's a recipe so you can make your own."
+        subtitle={data.description}
         align={isMd ? 'left' : 'center'}
       />
       <Grid
@@ -73,7 +73,7 @@ const VideoSection = (props) => {
         <Grid item xs={12} md={6} data-aos={'fade-up'}>
           <Grid container alignItems='flex-start'>
             <Grid item xs={12}>
-              <RecipeGeneral></RecipeGeneral>
+              <RecipeGeneral data={data} />
             </Grid>
           </Grid>
         </Grid>
@@ -92,11 +92,11 @@ const VideoSection = (props) => {
   );
 };
 
-VideoSection.propTypes = {
+GeneralInfo.propTypes = {
   /**
    * External classes
    */
   className: PropTypes.string,
 };
 
-export default VideoSection;
+export default GeneralInfo;

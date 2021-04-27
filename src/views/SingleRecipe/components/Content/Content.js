@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const Content = (props) => {
   const { data, className, ...rest } = props;
   const classes = useStyles();
+  const items = [];
 
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
@@ -50,14 +51,10 @@ const Content = (props) => {
     <div className={className} {...rest}>
       <br></br>
       <Typography component='p' variant='h4' color='textPrimary'>
-        Ingredient
+        Ingredients
       </Typography>
       <br></br>
       <div className={classes.section}>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          1.Qui exercitation eiusmod cillum voluptate occaecat ipsum excepteur
-          proident cupidatat nostrud dolore culpa.
-        </Typography>
         <Typography component='p' variant='h6' color='textPrimary'>
           2.Nisi minim tempor cillum Lorem et ut Lorem culpa anim eu aute
           reprehenderit.
@@ -69,7 +66,7 @@ const Content = (props) => {
       <Divider></Divider>
       <br></br>
       <Typography component='p' variant='h4' color='textPrimary'>
-        Direction
+        Directions
       </Typography>
       <br></br>
       {/* <div className={classes.section}>
@@ -91,7 +88,19 @@ const Content = (props) => {
       </div> */}
 
       <div className={classes.section}>
-        <Typography component='p' variant='h6' color='textPrimary'>
+        {data.directions.map((value, index) => {
+          return (
+            <Typography
+              component='p'
+              variant='h6'
+              color='textPrimary'
+              key={index}
+            >
+              {value.step} {value.content}
+            </Typography>
+          );
+        })}
+        {/* <Typography component='p' variant='h6' color='textPrimary'>
           1.Eu esse voluptate excepteur exercitation amet elit eu pariatur
           aliqua ex consectetur ex officia.
         </Typography>
@@ -106,7 +115,7 @@ const Content = (props) => {
         </Typography>
         <Typography component='p' variant='h6' color='textPrimary'>
           5.Proident proident enim voluptate nostrud veniam.
-        </Typography>
+        </Typography> */}
       </div>
       <div>
         <IconButton className={classes.socialIcon}>

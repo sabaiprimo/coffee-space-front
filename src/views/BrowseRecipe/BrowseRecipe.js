@@ -11,6 +11,7 @@ import { width } from '@material-ui/system';
 const ALL_RECIPE = gql`
   query {
     recipes {
+      _id
       title
       images {
         src

@@ -4,7 +4,7 @@
  * You may delete this file and its occurrences from the project filesystem if you are using GatsbyJS or NextJS version
  */
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, useParams } from 'react-router-dom';
 import WithLayout from 'WithLayout';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
@@ -74,7 +74,7 @@ const Routes = () => {
       />
       <Route
         exact
-        path='/single-recipe'
+        path='/single-recipe/:id'
         render={(matchProps) => (
           <WithLayout
             {...matchProps}

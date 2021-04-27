@@ -54,15 +54,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Object} props
  */
 const RecipeGeneral = (props) => {
-  const {
-    badgeColor,
-    badgeTitle,
-    jobTitle,
-    jobLocation,
-    jobType,
-    className,
-    ...rest
-  } = props;
+  const { className, data, ...rest } = props;
 
   const classes = useStyles();
 
@@ -78,7 +70,9 @@ const RecipeGeneral = (props) => {
             >
               <h4>Prep: &nbsp;&nbsp;</h4>
             </Typography>
-            <span> 10min </span>
+            <span>
+              {data.preparationTime} {data.preparationTime > 1 ? 'mins' : 'min'}
+            </span>
           </Grid>
           <Grid item container alignItems='center' xs={12}>
             <Typography
@@ -88,7 +82,9 @@ const RecipeGeneral = (props) => {
             >
               <h4>Total: &nbsp;&nbsp;</h4>
             </Typography>
-            <span> 10min </span>
+            <span>
+              {data.totalTime} {data.totalTime > 1 ? 'mins' : 'min'}
+            </span>
           </Grid>
           <Grid item container alignItems='center' xs={12}>
             <Typography
@@ -98,7 +94,9 @@ const RecipeGeneral = (props) => {
             >
               <h4>Serving: &nbsp;&nbsp;</h4>
             </Typography>
-            <span> 4 </span>
+            <span>
+              {data.serving} {data.serving > 1 ? 'cups' : 'cup'}
+            </span>
           </Grid>
           <Grid item container alignItems='center' xs={12}>
             <Typography
@@ -108,7 +106,7 @@ const RecipeGeneral = (props) => {
             >
               <h4>Level: &nbsp;&nbsp;</h4>
             </Typography>
-            <span> Beginner </span>
+            <span> {data.level} </span>
           </Grid>
           <Grid item container alignItems='center' xs={12}>
             <Typography
@@ -118,39 +116,12 @@ const RecipeGeneral = (props) => {
             >
               <h4>Roast: &nbsp;&nbsp;</h4>
             </Typography>
-            <span> Medium Roast </span>
+            <span> {data.roastLevel}</span>
           </Grid>
         </Grid>
       </>
     </CardBase>
   );
-};
-
-RecipeGeneral.propTypes = {
-  /**
-   * External classes
-   */
-  className: PropTypes.string,
-  /**
-   * Badge color of the job card
-   */
-  badgeColor: PropTypes.string.isRequired,
-  /**
-   * Badge title of the job card
-   */
-  badgeTitle: PropTypes.string.isRequired,
-  /**
-   * Job title of the card
-   */
-  jobTitle: PropTypes.string.isRequired,
-  /**
-   * Job location of the card
-   */
-  jobLocation: PropTypes.string.isRequired,
-  /**
-   * Job type of the card
-   */
-  jobType: PropTypes.string.isRequired,
 };
 
 export default RecipeGeneral;
