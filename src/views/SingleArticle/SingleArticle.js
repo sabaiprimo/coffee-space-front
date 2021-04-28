@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
+import { Switch, Route, Redirect, useParams } from 'react-router-dom';
 import { Section, SectionAlternate } from 'components/organisms';
 import {
   Content,
@@ -10,8 +11,33 @@ import {
   SidebarNewsletter,
   SimilarStories,
 } from './components';
+import { gql, useQuery } from '@apollo/client';
 
 import { content, sidebarArticles, similarStories } from './data';
+
+const GET_ARTICLE_BY_ID = gql`
+  query getArticleByID($articleID: ID!) {
+    article(_id: $articleID) {
+      _id
+      title
+      subtitle
+      headline
+      author {
+        _id
+      }
+      cover {
+        src
+      }
+      content {
+        textNumber
+        text
+        images
+      }
+      issueDate
+      tags
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,19 +57,28 @@ const useStyles = makeStyles((theme) => ({
 
 const SingleArticle = () => {
   const classes = useStyles();
-
+  let { id } = useParams();
+  const articleID = id;
+  const queryArticle = useQuery(GET_ARTICLE_BY_ID, {
+    variables: { articleID },
+  });
+  if (queryArticle.loading) {
+    return <p>Loading..</p>;
+  }
+  const article = queryArticle.data.article;
+  console.log(article);
   return (
     <div className={classes.root}>
       <Hero
-        cover={content.cover}
-        title={content.title}
-        subtitle={content.subtitle}
-        author={content.author}
+        cover={article.cover}
+        title={article.title}
+        subtitle={article.subtitle}
+        author={article.author}
       />
       <Section>
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
-            <Content data={content} />
+            <Content data={article} />
           </Grid>
           <Grid item xs={12} md={4}>
             <SidebarArticles data={sidebarArticles} />

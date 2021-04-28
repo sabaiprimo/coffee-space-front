@@ -65,7 +65,7 @@ const coffeeIconStyle = {
 };
 
 const Recipes = (props) => {
-  const { data, className, ...rest } = props;
+  const { data, className, searchtitle, ...rest } = props;
   const classes = useStyles();
 
   const theme = useTheme();
@@ -77,14 +77,27 @@ const Recipes = (props) => {
     <div className={className} {...rest}>
       <SectionHeader
         title={
-          <span>
-            Browse our{' '}
-            <Typography color='secondary' variant='inherit' component='span'>
-              popular recipe
-            </Typography>
-          </span>
+          searchtitle === '' ? (
+            <span>
+              Browse our{' '}
+              <Typography color='secondary' variant='inherit' component='span'>
+                popular recipe
+              </Typography>
+            </span>
+          ) : (
+            <span>
+              Recipe begin with{' '}
+              <Typography color='secondary' variant='inherit' component='span'>
+                {searchtitle}
+              </Typography>
+            </span>
+          )
         }
-        subtitle='Here are our reccommend recipe you might want to try.'
+        subtitle={
+          searchtitle === ''
+            ? 'Here are our reccommend recipe you might want to try.'
+            : ''
+        }
         fadeUp
       />
       <Grid container spacing={isMd ? 4 : 2}>

@@ -91,6 +91,7 @@ const Form = () => {
       const token = result.data.register;
       console.log(token);
       localStorage.setItem('token', token);
+      window.location.replace('/');
     }
   }, [result.data]);
 
@@ -135,7 +136,6 @@ const Form = () => {
           displayName,
         },
       });
-      window.location.replace('/');
     }
 
     setFormState((formState) => ({

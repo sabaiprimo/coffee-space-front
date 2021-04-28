@@ -34,7 +34,7 @@ export const upload = (idx, file) => {
   return data;
 };
 
-export const uploadFiles = () => {
+export const uploadFiles = (filesObj) => {
   const files = Array.from(filesObj);
   // console.log(files);
   let imageLinks = [];
@@ -43,7 +43,10 @@ export const uploadFiles = () => {
   Promise.all(
     files.map(async (file, i) => {
       let uploadImage = await upload(i, file);
-      imageLinks.push(uploadImage.data.fileLocation);
+      imageLinks.push({
+        src: uploadImage.data.fileLocation,
+        srcSet: uploadImage.data.fileLocation,
+      });
     })
   ).then(console.log('upload finish', imageLinks));
 

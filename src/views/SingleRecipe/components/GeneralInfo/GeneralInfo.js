@@ -77,15 +77,14 @@ const GeneralInfo = (props) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid
-          item
-          container
-          justify='center'
-          xs={12}
-          md={6}
-          data-aos={'fade-up'}
-        >
-          <Image src={coffee1} alt='Latte' />
+        <Grid item container xs={12} md={6} data-aos={'fade-up'}>
+          <Image
+            style={{
+              resizeMode: 'cover',
+            }}
+            src={data.images[0].src}
+            alt='Latte'
+          />
         </Grid>
       </Grid>
     </div>

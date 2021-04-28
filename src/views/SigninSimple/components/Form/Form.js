@@ -52,9 +52,12 @@ const Form = () => {
     errors: {},
   });
 
-  const [loginUser, result] = useLazyQuery(LOGIN_USER, {
+  const [loginUser, loginResult] = useLazyQuery(LOGIN_USER, {
     onCompleted: (data) => {
       console.log(data);
+    },
+    onError: (err) => {
+      alert('Invalid username or password');
     },
   });
 
@@ -68,14 +71,18 @@ const Form = () => {
     }));
   }, [formState.values]);
 
+  // React.us
+
   React.useEffect(() => {
-    if (result.data) {
-      const token = result.data.login.token;
+    if (loginResult.data) {
+      const token = loginResult.data.login.token;
       console.log(token);
       // setToken(token);
       localStorage.setItem('token', token);
+      window.location.replace('/');
     }
-  }, [result.data]);
+    // console.log(loginResult);
+  }, [loginResult.data]);
 
   const handleChange = (event) => {
     event.persist();
@@ -103,9 +110,9 @@ const Form = () => {
       const email = formState.values.email;
       const password = formState.values.password;
 
-      loginUser({ variables: { email, password } });
-
-      // window.location.replace('/');
+      loginUser({
+        variables: { email, password },
+      });
     }
 
     setFormState((formState) => ({
@@ -174,7 +181,7 @@ const Form = () => {
               Send
             </Button>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography
               variant='subtitle1'
               color='textSecondary'
@@ -186,7 +193,7 @@ const Form = () => {
                 href='/password-reset-simple'
               />
             </Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
       </form>
     </div>

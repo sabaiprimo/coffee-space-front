@@ -17,6 +17,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Image, DarkModeToggler } from 'components/atoms';
 import coffIcon from '../../../../../src/assets/icons/coffee-space-icons.svg';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../../../features/user/UserSlice';
 
 const useStyles = makeStyles((theme) => ({
   flexGrow: {
@@ -137,24 +139,26 @@ const Topbar = ({
     setAnchorEl(null);
     setOpenedPopoverId(null);
   };
+  const { displayName } = useSelector(userSelector);
 
-  const recipes = pages.recipes;
+  const recipes = displayName
+    ? pages.recipes
+    : {
+        title: 'Browse Recipe',
+        id: 'browse-recipe-page',
+        href: '/browse-recipe',
+      };
   const articlePages = pages.articles;
-  const account = pages.account;
+  const account = displayName
+    ? pages.account
+    : {
+        norender: true,
+      };
 
   const MenuGroup = (props) => {
     const { item } = props;
     return (
       <List disablePadding>
-        {/* <ListItem disableGutters>
-          <Typography
-            variant='body2'
-            color='primary'
-            className={classes.menuGroupTitle}
-          >
-            {item.groupTitle}
-          </Typography>
-        </ListItem> */}
         {item.map((page, i) => (
           <ListItem disableGutters key={i} className={classes.menuGroupItem}>
             <Typography
@@ -193,6 +197,13 @@ const Topbar = ({
         </div>
       </div>
     );
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem('token');
+    alert('User has logged out');
+    window.location.replace('/');
   };
 
   const renderPages = (id) => {
@@ -268,6 +279,8 @@ const Topbar = ({
                   <div>{renderPages(page.id)}</div>
                 </Popover>
               </div>
+            ) : page.norender ? (
+              ''
             ) : (
               <div key={page.id}>
                 <ListItem
@@ -291,42 +304,55 @@ const Topbar = ({
               </div>
             )
           )}
+          {displayName ? (
+            <>
+              <Typography>Hello! {displayName}</Typography>
 
-          {/* <ListItem
-            className={clsx(classes.listItem, 'menu-item--no-dropdown')}
-          >
-            <DarkModeToggler
-              themeMode={themeMode}
-              onClick={() => themeToggler()}
-            />
-          </ListItem> */}
-          <ListItem
-            className={clsx(classes.listItem, 'menu-item--no-dropdown')}
-          >
-            <Button
-              variant='contained'
-              component='a'
-              target='blank'
-              href='/signin'
-              className={classes.listItemButton}
-            >
-              LOG IN
-            </Button>
-          </ListItem>
-          <ListItem
-            className={clsx(classes.listItem, 'menu-item--no-dropdown')}
-          >
-            <Button
-              variant='contained'
-              color='primary'
-              component='a'
-              target='blank'
-              href='/signup'
-              className={classes.listItemButton}
-            >
-              REGISTER NOW
-            </Button>
-          </ListItem>
+              <ListItem
+                className={clsx(classes.listItem, 'menu-item--no-dropdown')}
+              >
+                <Button
+                  variant='contained'
+                  component='a'
+                  target='blank'
+                  onClick={handleLogout}
+                  className={classes.listItemButton}
+                >
+                  LOG OUT
+                </Button>
+              </ListItem>
+            </>
+          ) : (
+            <>
+              <ListItem
+                className={clsx(classes.listItem, 'menu-item--no-dropdown')}
+              >
+                <Button
+                  variant='contained'
+                  component='a'
+                  target='blank'
+                  href='/signin'
+                  className={classes.listItemButton}
+                >
+                  LOG IN
+                </Button>
+              </ListItem>
+              <ListItem
+                className={clsx(classes.listItem, 'menu-item--no-dropdown')}
+              >
+                <Button
+                  variant='contained'
+                  color='primary'
+                  component='a'
+                  target='blank'
+                  href='/signup'
+                  className={classes.listItemButton}
+                >
+                  REGISTER NOW
+                </Button>
+              </ListItem>
+            </>
+          )}
         </List>
       </Hidden>
       <Hidden mdUp>

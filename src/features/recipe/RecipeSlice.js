@@ -1,51 +1,44 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-export const userSlice = createSlice({
-  name: 'user',
+export const recipeSlice = createSlice({
+  name: 'recipe',
   initialState: {
-    _id: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    displayName: '',
-    pictureProfile: '',
-    tempUploadProfile: '',
-    isFetching: false,
-    isSuccess: false,
-    isError: false,
-    errorMessage: '',
+    searchTitle: '',
+    searchFilter: '',
+    sortByDate: false,
+    sortByRating: false,
   },
   reducers: {
-    setUserProfile: (state, action) => {
-      // console.log(action);
-      const payload = action.payload.me;
-      state._id = payload._id;
-      state.email = payload.email;
-      state.displayName = payload.displayName;
-      state.firstName = payload.firstName;
-      state.lastName = payload.lastName;
-      state.pictureProfile = payload.pictureProfile;
+    // setUserProfile: (state, action) => {
+    //   // console.log(action);
+    //   const payload = action.payload.me;
+    //   state._id = payload._id;
+    //   state.email = payload.email;
+    //   state.displayName = payload.displayName;
+    //   state.firstName = payload.firstName;
+    //   state.lastName = payload.lastName;
+    //   state.pictureProfile = payload.pictureProfile;
+    // },
+    setSearchTitle: (state, { payload }) => {
+      state.searchTitle = payload;
     },
-    setTempUploadProfile: (state, { payload }) => {
-      state.tempUploadProfile = payload;
-    },
-    clearState: (state) => {
-      state.isError = false;
-      state.isSuccess = false;
-      state.isFetching = false;
-      return state;
-    },
-    clearTempUploadProfile: (state) => {
-      state.tempUploadProfile = '';
-    },
-    clearUserData: (state) => {
-      state._id = '';
-      state.email = '';
-      state.displayName = '';
-      state.firstName = '';
-      state.lastName = '';
-      state.pictureProfile = '';
-    },
+    // clearState: (state) => {
+    //   state.isError = false;
+    //   state.isSuccess = false;
+    //   state.isFetching = false;
+    //   return state;
+    // },
+    // clearTempUploadProfile: (state) => {
+    //   state.tempUploadProfile = '';
+    // },
+    // clearUserData: (state) => {
+    //   state._id = '';
+    //   state.email = '';
+    //   state.displayName = '';
+    //   state.firstName = '';
+    //   state.lastName = '';
+    //   state.pictureProfile = '';
+    // },
   },
   // extraReducers: {
   //   [signupUser.fulfilled]: (state, { payload }) => {
@@ -97,12 +90,6 @@ export const userSlice = createSlice({
   // },
 });
 
-export const {
-  clearState,
-  setUserProfile,
-  clearUserData,
-  setTempUploadProfile,
-  clearTempUploadProfile,
-} = userSlice.actions;
+export const { setSearchTitle } = recipeSlice.actions;
 
-export const userSelector = (state) => state.user;
+export const recipeSelector = (state) => state.recipe;

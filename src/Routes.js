@@ -40,7 +40,9 @@ const Routes = () => {
   const dispatch = useDispatch();
   const { loading, error, data } = useQuery(GET_USER_PROFILE);
   if (loading) return 'Loading...';
-  dispatch(setUserProfile(data));
+  if (data) {
+    dispatch(setUserProfile(data));
+  }
   console.log(data);
   // useEffect(() => {
   //   dispatch(fetchUserBytoken({ token: localStorage.getItem('token') }));
@@ -107,7 +109,7 @@ const Routes = () => {
       />
       <Route
         exact
-        path='/single-article'
+        path='/single-article/:id'
         render={(matchProps) => (
           <WithLayout
             {...matchProps}

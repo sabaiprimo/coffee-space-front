@@ -1,14 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useMediaQuery, Typography, GridList, GridListTile, IconButton } from '@material-ui/core';
+import {
+  useMediaQuery,
+  Typography,
+  GridList,
+  GridListTile,
+  IconButton,
+} from '@material-ui/core';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import PinterestIcon from '@material-ui/icons/Pinterest';
 import { Image } from 'components/atoms';
+import validate from 'validate.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: theme.spacing(2),
     [theme.breakpoints.up('md')]: {
@@ -30,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Content = props => {
+const Content = (props) => {
   const { data, className, ...rest } = props;
   const classes = useStyles();
 
@@ -42,7 +49,7 @@ const Content = props => {
   return (
     <div className={className} {...rest}>
       <div className={classes.section}>
-        <Typography component="p" variant="h6" color="textPrimary">
+        <Typography component='p' variant='h6' color='textPrimary'>
           {data.headline}
         </Typography>
       </div>
@@ -53,38 +60,45 @@ const Content = props => {
           lazyProps={{ width: '100%', height: '100%' }}
         />
       </div>
-      <div className={classes.section}>
-        <Typography component="p" variant="h4" color="primary" align="center">
-          "{data.quote}"
-        </Typography>
-      </div>
-      <div className={classes.section}>
-        <Typography component="p" variant="h6" color="textPrimary">
-          {data.text1}
-        </Typography>
-      </div>
-      <div className={classes.section}>
-        <GridList
-          cellHeight={isMd ? 360 : 260}
-          cols={2}
-          spacing={isMd ? 24 : 8}
-        >
-          {data.images.map((item, index) => (
-            <GridListTile key={index} cols={isMd ? item.cols : 2}>
-              <Image
-                {...item}
-                className={classes.image}
-                lazyProps={{ width: '100%', height: '100%' }}
-              />
-            </GridListTile>
-          ))}
-        </GridList>
-      </div>
-      <div className={classes.section}>
-        <Typography component="p" variant="h6" color="textPrimary">
-          {data.text2}
-        </Typography>
-      </div>
+
+      {data.content.map((value, index) => {
+        return (
+          <div className={classes.section}>
+            <div className={classes.section}>
+              <Typography component='p' variant='h6' color='textPrimary'>
+                {value.text}
+              </Typography>
+            </div>
+            <div className={classes.section}>
+              <GridList
+                cellHeight={isMd ? 360 : 260}
+                cols={2}
+                spacing={isMd ? 24 : 8}
+              >
+                {value.images.length % 2 == 0
+                  ? value.images.map((item, index) => (
+                      <GridListTile key={index} cols={1}>
+                        <Image
+                          src={item}
+                          className={classes.image}
+                          lazyProps={{ width: '100%', height: '100%' }}
+                        />
+                      </GridListTile>
+                    ))
+                  : value.images.map((item, index) => (
+                      <GridListTile key={index} cols={index == 0 ? 2 : 1}>
+                        <Image
+                          src={item}
+                          className={classes.image}
+                          lazyProps={{ width: '100%', height: '100%' }}
+                        />
+                      </GridListTile>
+                    ))}
+              </GridList>
+            </div>
+          </div>
+        );
+      })}
       <div>
         <IconButton className={classes.socialIcon}>
           <FacebookIcon />

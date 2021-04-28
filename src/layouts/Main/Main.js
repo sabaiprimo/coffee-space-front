@@ -57,69 +57,7 @@ const Main = ({ children, themeToggler, themeMode }) => {
           title: 'Notifications',
           href: '/account/?pid=notifications',
         },
-        // {
-        //   title: 'Billing',
-        //   href: '/account/?pid=billing',
-        // },
       ],
-      // children: {
-      //   settings: {
-      //     groupTitle: 'Settings',
-
-      //   },
-      //   signup: {
-      //     groupTitle: 'Sign up',
-      //     pages: [
-      //       {
-      //         title: 'Simple',
-      //         href: '/signup-simple',
-      //       },
-      //       {
-      //         title: 'Cover',
-      //         href: '/signup-cover',
-      //       },
-      //     ],
-      //   },
-      //   signin: {
-      //     groupTitle: 'Sign in',
-      //     pages: [
-      //       {
-      //         title: 'Simple',
-      //         href: '/signin-simple',
-      //       },
-      //       {
-      //         title: 'Cover',
-      //         href: '/signin-cover',
-      //       },
-      //     ],
-      //   },
-      //   password: {
-      //     groupTitle: 'Password reset',
-      //     pages: [
-      //       {
-      //         title: 'Simple',
-      //         href: '/password-reset-simple',
-      //       },
-      //       {
-      //         title: 'Cover',
-      //         href: '/password-reset-cover',
-      //       },
-      //     ],
-      //   },
-      //   error: {
-      //     groupTitle: 'Error',
-      //     pages: [
-      //       {
-      //         title: 'Simple',
-      //         href: '/not-found',
-      //       },
-      //       {
-      //         title: 'Cover',
-      //         href: '/not-found-cover',
-      //       },
-      //     ],
-      //   },
-      // },
     },
   };
 
