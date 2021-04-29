@@ -15,6 +15,8 @@ import {
 } from './components';
 import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { content, sidebarArticles, popularCourses } from './data';
+import { userSelector } from '../../features/user/UserSlice';
+import { useSelector } from 'react-redux';
 
 const GET_RECIPE_INFO = gql`
   query getRecipeByID($recipeID: ID!) {
@@ -27,18 +29,43 @@ const GET_RECIPE_INFO = gql`
       serving
       roastLevel
       level
-      ingredient
-      equipment
+      ingredients
+      equipments
       directions {
         step
         content
       }
       author {
         _id
+        firstName
       }
       images {
         src
       }
+    }
+  }
+`;
+
+const GET_COMMENT_RECIPE = gql`
+  query getCommentRecipe($recipeID: ID) {
+    comments(recipeID: $recipeID) {
+      _id
+      userID {
+        _id
+        displayName
+        pictureProfile
+      }
+      context
+      commentDate
+    }
+  }
+`;
+
+const GET_FAVRECIPE_BY_USER = gql`
+  query getFavRecipe($userID: ID!, $recipeID: ID!) {
+    favRecipe(userID: $userID, recipeID: $recipeID) {
+      _id
+      isFav
     }
   }
 `;
@@ -63,14 +90,23 @@ const SingleRecipe = () => {
   const classes = useStyles();
   let { id } = useParams();
   const recipeID = id;
+  const userID = useSelector(userSelector)._id;
   const queryRecipe = useQuery(GET_RECIPE_INFO, {
     variables: { recipeID },
   });
-  if (queryRecipe.loading) {
+
+  const queryComment = useQuery(GET_COMMENT_RECIPE, {
+    variables: { recipeID },
+  });
+
+  const queryFavRecipe = useQuery(GET_FAVRECIPE_BY_USER, {
+    variables: { recipeID, userID },
+  });
+
+  if (queryRecipe.loading || queryComment.loading || queryFavRecipe.loading) {
     return <p>Loading..</p>;
   }
-  console.log(queryRecipe.data);
-  // console.log(queryRecipe.data);
+
   return (
     <div className={classes.root}>
       {/* <Hero
@@ -86,8 +122,14 @@ const SingleRecipe = () => {
             <br></br>
             <br></br>
             <Divider />
-            <Content data={queryRecipe.data.recipe} />
-            <CommentSection />
+            <Content
+              favrecipe={queryFavRecipe.data.favRecipe}
+              data={queryRecipe.data.recipe}
+            />
+            <CommentSection
+              recipeid={queryRecipe.data.recipe._id}
+              comments={queryComment.data.comments}
+            />
           </Grid>
           {/* <Grid item xs={12} md={8}>
             <Divider />

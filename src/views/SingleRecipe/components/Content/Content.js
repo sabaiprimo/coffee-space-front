@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
@@ -9,11 +9,32 @@ import {
   IconButton,
   Divider,
 } from '@material-ui/core';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import TwitterIcon from '@material-ui/icons/Twitter';
-import InstagramIcon from '@material-ui/icons/Instagram';
-import PinterestIcon from '@material-ui/icons/Pinterest';
+import Rating from '@material-ui/lab/Rating';
+import { withStyles } from '@material-ui/core/styles';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import { userSelector } from '../../../../features/user/UserSlice';
+
+import { useSelector, useDispatch } from 'react-redux';
+
 import { Image } from 'components/atoms';
+import { gql, useMutation, useQuery } from '@apollo/client';
+
+const CREATE_FAV_RECIPE = gql`
+  mutation createFavRecipe($userID: ID!, $recipeID: ID!) {
+    addFavRecipe(user: $userID, recipe: $recipeID) {
+      _id
+      isFav
+    }
+  }
+`;
+
+const TOGGLE_FAV_RECIPE = gql`
+  mutation modifyFavRecipe($favRecipeID: ID!) {
+    modifyFavRecipe(_id: $favRecipeID) {
+      isFav
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   section: {
@@ -36,16 +57,69 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+const StyledRating = withStyles({
+  iconFilled: {
+    color: '#ff6d75',
+  },
+  iconHover: {
+    color: '#ff3d47',
+  },
+})(Rating);
+
+// React.useEffect(() => {
+//   const errors = validate(formState.values, schema);
+
+//   setFormState((formState) => ({
+//     ...formState,
+//     isValid: errors ? false : true,
+//     errors: errors || {},
+//   }));
+// }, [formState.values]);
 
 const Content = (props) => {
-  const { data, className, ...rest } = props;
+  const { favrecipe, data, className, ...rest } = props;
+
   const classes = useStyles();
   const items = [];
-
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
+
+  const recipeID = data._id;
+  const userID = useSelector(userSelector)._id;
+  console.log('recipeID: ', recipeID);
+  console.log('userID: ', userID);
+
+  const [addFavRecipe, resultAddFav] = useMutation(CREATE_FAV_RECIPE);
+
+  const [modifyFavRecipe, resultModifyFav] = useMutation(TOGGLE_FAV_RECIPE);
+
+  const [isUserFav, setIsUserFav] = useState(
+    favrecipe ? favrecipe.isFav : false
+  );
+
+  // const isFav = queryFavRecipe.data.favRecipe
+  //   ? queryFavRecipe.data.favRecipe.isFav
+  //   : false;
+
+  const onChangeFav = (e) => {
+    e.persist();
+    favrecipe
+      ? modifyFavRecipe({ variables: { favRecipeID: favrecipe._id } })
+          .then((data) => {
+            setIsUserFav(!isUserFav);
+          })
+          .catch((err) => console.log(err))
+      : addFavRecipe({ variables: { userID, recipeID } })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((err) => console.log(err));
+    // setIsUserFav(!isUserFav);
+  };
+
+  const handleClickFav = () => {};
 
   return (
     <div className={className} {...rest}>
@@ -55,37 +129,49 @@ const Content = (props) => {
       </Typography>
       <br></br>
       <div className={classes.section}>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          2.Nisi minim tempor cillum Lorem et ut Lorem culpa anim eu aute
-          reprehenderit.
-        </Typography>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          3.Do ea consequat magna aliquip non pariatur.
-        </Typography>
+        <div className={classes.section}>
+          {data.ingredients.map((value, index) => {
+            return (
+              <Typography
+                component='p'
+                variant='h6'
+                color='textPrimary'
+                key={index}
+              >
+                {index + 1}. {value}
+              </Typography>
+            );
+          })}
+        </div>
       </div>
-      <Divider></Divider>
+      <Divider />
+      <br></br>
+      <Typography component='p' variant='h4' color='textPrimary'>
+        Equipments
+      </Typography>
+      <br></br>
+      <div className={classes.section}>
+        <div className={classes.section}>
+          {data.equipments.map((value, index) => {
+            return (
+              <Typography
+                component='p'
+                variant='h6'
+                color='textPrimary'
+                key={index}
+              >
+                {index + 1}. {value}
+              </Typography>
+            );
+          })}
+        </div>
+      </div>
+      <Divider />
       <br></br>
       <Typography component='p' variant='h4' color='textPrimary'>
         Directions
       </Typography>
       <br></br>
-      {/* <div className={classes.section}>
-        <Image
-          {...data.cover}
-          className={classes.image}
-          lazyProps={{ width: '100%', height: '100%' }}
-        />
-      </div>
-      <div className={classes.section}>
-        <Typography component='p' variant='h4' color='primary' align='center'>
-          "{data.quote}"
-        </Typography>
-      </div>
-      <div className={classes.section}>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          {data.text1}
-        </Typography>
-      </div> */}
 
       <div className={classes.section}>
         {data.directions.map((value, index) => {
@@ -96,40 +182,25 @@ const Content = (props) => {
               color='textPrimary'
               key={index}
             >
-              {value.step} {value.content}
+              {value.step}. {value.content}
             </Typography>
           );
         })}
-        {/* <Typography component='p' variant='h6' color='textPrimary'>
-          1.Eu esse voluptate excepteur exercitation amet elit eu pariatur
-          aliqua ex consectetur ex officia.
-        </Typography>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          2.Nulla voluptate culpa irure veniam ipsum cillum eiusmod eiusmod sit.
-        </Typography>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          3.Ex enim qui amet eu consequat do ex minim do deserunt qui consequat.
-        </Typography>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          4.Consectetur magna Lorem aliquip aliqua.
-        </Typography>
-        <Typography component='p' variant='h6' color='textPrimary'>
-          5.Proident proident enim voluptate nostrud veniam.
-        </Typography> */}
       </div>
       <div>
-        <IconButton className={classes.socialIcon}>
-          <FacebookIcon />
-        </IconButton>
-        <IconButton className={classes.socialIcon}>
-          <InstagramIcon />
-        </IconButton>
-        <IconButton className={classes.socialIcon}>
-          <TwitterIcon />
-        </IconButton>
-        <IconButton className={classes.socialIcon}>
-          <PinterestIcon />
-        </IconButton>
+        <Rating name='size-medium' defaultValue={2} size='large' />
+        <div style={{ marginRight: '2rem', float: 'right' }}>
+          <StyledRating
+            size='large'
+            name='customized-color'
+            max={1}
+            value={parseInt(isUserFav * 1)}
+            onChange={onChangeFav}
+            // getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+            precision={1}
+            icon={<FavoriteIcon fontSize='inherit' />}
+          />
+        </div>
       </div>
     </div>
   );
