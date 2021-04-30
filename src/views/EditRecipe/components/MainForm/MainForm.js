@@ -9,12 +9,17 @@ import {
   Button,
   Divider,
   NativeSelect,
+  GridListTile,
+  GridList,
+  GridListTileBar,
+  IconButton,
 } from '@material-ui/core';
+
 import { DropzoneArea } from 'material-ui-dropzone';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSelector, useDispatch } from 'react-redux';
 import { userSelector } from '../../../../features/user/UserSlice';
-
+import DeleteIcon from '@material-ui/icons/Delete';
 import { upload } from '../../../../helpers/utils';
 import validate from 'validate.js';
 import { ImageSearch } from '@material-ui/icons';
@@ -56,8 +61,9 @@ const schema = {
   // images: { allowEmpty: false, message: 'is required' },
 };
 
-const CREATE_RECIPE = gql`
-  mutation createRecipe(
+const UPDATE_RECIPE = gql`
+  mutation updateRecipe(
+    $_id: ID!
     $title: String
     $description: String
     $preparationTime: Float
@@ -68,10 +74,11 @@ const CREATE_RECIPE = gql`
     $ingredients: [String]
     $equipments: [String]
     $directions: [DirectionInput]
-    $author: ID!
     $images: [ImageInput]
+    $issueDate: DateTime
   ) {
-    addRecipe(
+    modifyRecipe(
+      _id: $_id
       title: $title
       description: $description
       preparationTime: $preparationTime
@@ -82,8 +89,8 @@ const CREATE_RECIPE = gql`
       ingredients: $ingredients
       equipments: $equipments
       directions: $directions
-      author: $author
       images: $images
+      issueDate: $issueDate
     ) {
       _id
       title
@@ -122,6 +129,16 @@ const useStyles = makeStyles((theme) => ({
       background: theme.palette.background.paper,
     },
   },
+  gridList: {
+    height: 200,
+    objectFit: 'cover',
+    border: `4px solid ${theme.palette.alternate.dark}`,
+    boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
+  },
+  gridListTile: {
+    objectFit: 'cover',
+    borderRadius: '1rem',
+  },
 }));
 
 const MainForm = (props) => {
@@ -140,7 +157,7 @@ const MainForm = (props) => {
   const [imageShow, setImageShow] = useState(initFiles);
 
   console.log('init', initFiles);
-  const [createRecipe, resultRecipe] = useMutation(CREATE_RECIPE);
+  const [updateRecipe, resultRecipe] = useMutation(UPDATE_RECIPE);
 
   const [directionsForm, setDirections] = useState(data.directions);
   const [ingredientsForm, setIngredients] = useState(data.ingredients);
@@ -162,6 +179,11 @@ const MainForm = (props) => {
     touched: {},
     errors: {},
   });
+  const handleDelete = (e, idx) => {
+    let tempShowImage = [...imageShow];
+    tempShowImage.splice(idx, 1);
+    setImageShow(tempShowImage);
+  };
   const hasError = (field) =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
@@ -343,22 +365,49 @@ const MainForm = (props) => {
     );
   }
 
-  let showImageList = [];
+  let imageShowList = [];
 
-  for (let l = 0; l < directionStep; l++) {
-    showImageList.push(<img src='google.com' />);
+  for (let l = 0; l < imageShow.length; l++) {
+    console.log('src: ', imageShow[l]);
+    imageShowList.push(
+      <GridListTile className={classes.gridListTile} key={l}>
+        <img src={imageShow[l]} />
+        <GridListTileBar
+          titlePosition='bottom'
+          actionIcon={
+            <IconButton
+              onClick={(e) => handleDelete(e, l)}
+              edge='end'
+              aria-label='delete'
+            >
+              <DeleteIcon />
+            </IconButton>
+          }
+          actionPosition='center'
+          className={classes.titleBar}
+        />
+      </GridListTile>
+    );
   }
 
+  console.log(imageShowList);
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (filesObj.files.length == 0) {
-      alert('Please add some images');
+      ('Please add some images');
     }
     if (formState.isValid && filesObj.files.length > 0) {
       const files = Array.from(filesObj.files);
       // console.log(files);
       let imageLinks = [];
-      // const uploadPromises =
+      if (imageShow.length > 0) {
+        imageShow.map((image, i) => {
+          imageLinks.push({
+            src: image,
+            srcSet: image,
+          });
+        });
+      }
 
       Promise.all(
         files.map(async (file, i) => {
@@ -370,6 +419,7 @@ const MainForm = (props) => {
           console.log(imageLinks);
         })
       ).then(() => {
+        const _id = data._id;
         const title = formState.values.title;
         const description = formState.values.description;
         const preparationTime = parseInt(formState.values.preparationTime);
@@ -380,13 +430,13 @@ const MainForm = (props) => {
         const ingredients = formState.values.ingredients;
         const equipments = formState.values.equipments;
         const directions = formState.values.directions;
-        const author = userProfile._id;
         let issueDate = new Date().toISOString();
 
         console.log(directions);
         console.log(imageLinks);
-        createRecipe({
+        updateRecipe({
           variables: {
+            _id,
             title,
             description,
             preparationTime,
@@ -397,21 +447,13 @@ const MainForm = (props) => {
             ingredients,
             equipments,
             directions,
-            author,
             issueDate,
             images: imageLinks,
           },
         })
           .then(() => {
-            alert('Create new recipe complete');
-            setFormState({
-              isValid: false,
-              values: {},
-              touched: {},
-              errors: {},
-            });
-
-            window.location.reload();
+            ('Update new recipe complete');
+            window.location.replace('/account/?pid=myRecipe');
           })
           .catch((error) => {
             alert(error);
@@ -712,6 +754,9 @@ const MainForm = (props) => {
               Attach images
             </Typography>
             <div className={classes.bgBlue}>
+              <GridList className={classes.gridList} cols={3}>
+                {imageShowList}
+              </GridList>
               <div className={classes.form}>
                 <DropzoneArea
                   // initialFiles={initFiles}
