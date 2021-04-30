@@ -21,6 +21,7 @@ import icon2 from '../../../../assets/icons/coffee-recipe-gen/stopwatch.svg';
 import icon3 from '../../../../assets/icons/coffee-recipe-gen/hot-cup.svg';
 import icon4 from '../../../../assets/icons/coffee-recipe-gen/cooking.svg';
 import icon5 from '../../../../assets/icons/coffee-recipe-gen/sack.svg';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   cardProduct: {
@@ -118,9 +119,11 @@ const SimilarStories = (props) => {
       <DescriptionCta
         title='Similar Recipes'
         primaryCta={
-          <Button variant='outlined' color='primary' size='large'>
-            View all
-          </Button>
+          <Link to='/browse-recipe'>
+            <Button variant='outlined' color='primary' size='large'>
+              View all
+            </Button>
+          </Link>
         }
         align={'left'}
         titleProps={{
@@ -132,167 +135,175 @@ const SimilarStories = (props) => {
         data-aos='fade-up'
       />
       <Grid container spacing={2}>
-        {data.map((item, index) =>
-          index < 3 ? (
-            <Grid item xs={12} sm={12} md={4} key={index} data-aos='fade-up'>
-              <CardProduct
-                className={classes.cardProduct}
-                withShadow
-                liftUp
-                mediaContent={
-                  <>
-                    <Image
-                      {...item.image}
-                      alt={item.title}
-                      lazyProps={{ width: '100%', height: '100%' }}
-                      className={classes.image}
-                    />
-                  </>
-                }
-                cardContent={
-                  <Grid container spacing={1}>
-                    <div
+        {data.map((item, index) => (
+          <Grid key={index} item xs={12} sm={12} md={4} data-aos='fade-up'>
+            <CardProduct
+              className={classes.cardProduct}
+              withShadow
+              liftUp
+              mediaContent={
+                <>
+                  <Image
+                    {...item.images[0]}
+                    alt={item.title}
+                    lazyProps={{ width: '100%', height: '100%' }}
+                    className={classes.image}
+                  />
+                </>
+              }
+              cardContent={
+                <Grid container spacing={1}>
+                  <div
+                    style={{
+                      color: 'black',
+                      // backgroundColor: 'DodgerBlue',
+                      padding: '10px',
+                      fontFamily: 'Arial',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <img
                       style={{
-                        color: 'black',
-                        // backgroundColor: 'DodgerBlue',
-                        padding: '10px',
-                        fontFamily: 'Arial',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '100%',
+                        maxWidth: '10%',
                       }}
+                      src={icon1}
+                      alt='Facebook'
+                    />
+                    <p className={classes.generalInfo}>
+                      {item.preparationTime} mins
+                    </p>
+
+                    <img
+                      style={{
+                        maxWidth: '10%',
+                      }}
+                      src={icon2}
+                      alt='Facebook'
+                    />
+                    <p className={classes.generalInfo}>{item.totalTime} mins</p>
+
+                    <img
+                      style={{
+                        maxWidth: '10%',
+                      }}
+                      src={icon3}
+                      alt='Facebook'
+                    />
+                    <p className={classes.generalInfo}>{item.serving} cup</p>
+
+                    <img
+                      style={{
+                        maxWidth: '10%',
+                      }}
+                      src={icon4}
+                      alt='Facebook'
+                    />
+                    <p className={classes.generalInfo}>{item.level}</p>
+
+                    <img
+                      style={{
+                        maxWidth: '10%',
+                      }}
+                      src={icon5}
+                      alt='Facebook'
+                    />
+                    <p className={classes.generalInfo}>{item.roastLevel}</p>
+                  </div>
+
+                  <Grid item xs={12}>
+                    <Typography
+                      variant='h6'
+                      color='textPrimary'
+                      align='left'
+                      className={classes.fontWeight700}
                     >
-                      <img
-                        style={{
-                          maxWidth: '8%',
-                        }}
-                        src={icon1}
-                        alt='Facebook'
+                      {item.title}
+                    </Typography>
+                  </Grid>
+                  <Grid item container justify='flex-start' xs={12} xs={12}>
+                    <Grid
+                      item
+                      container
+                      alignItems='center'
+                      // justify='flex-end'
+                      xs={2}
+                    >
+                      <Avatar
+                        key={index}
+                        className={classes.courseCardReviewAvatar}
+                        // alt={review.authorName}
+                        src={item.author.pictureProfile}
                       />
-                      <p className={classes.generalInfo}>15 mins</p>
-
-                      <img
-                        style={{
-                          maxWidth: '8%',
-                        }}
-                        src={icon2}
-                        alt='Facebook'
-                      />
-                      <p className={classes.generalInfo}>30 mins</p>
-
-                      <img
-                        style={{
-                          maxWidth: '8%',
-                        }}
-                        src={icon3}
-                        alt='Facebook'
-                      />
-                      <p className={classes.generalInfo}>1 cup</p>
-
-                      <img
-                        style={{
-                          maxWidth: '8%',
-                        }}
-                        src={icon4}
-                        alt='Facebook'
-                      />
-                      <p className={classes.generalInfo}>Beginner</p>
-
-                      <img
-                        style={{
-                          maxWidth: '8%',
-                        }}
-                        src={icon5}
-                        alt='Facebook'
-                      />
-                      <p className={classes.generalInfo}>Light Roast</p>
-                    </div>
-
-                    <Grid item xs={12}>
-                      <Typography
-                        variant='h6'
-                        color='textPrimary'
-                        align='left'
-                        className={classes.fontWeight700}
-                      >
-                        {item.title}
-                      </Typography>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid
+                      item
+                      container
+                      alignItems='center'
+                      // justify='flex-end'
+                      xs={6}
+                    >
                       <Typography
                         variant='body1'
                         color='textSecondary'
-                        align='left'
+
+                        // align='left'
                       >
-                        {item.address}
+                        {item.author.displayName}
                       </Typography>
                     </Grid>
-                    <Grid item container justify='space-between' xs={12}>
-                      <Grid item container xs={6} wrap='nowrap'>
-                        {item.reviews.map((review, index) =>
-                          index < 3 ? (
-                            <Avatar
-                              key={index}
-                              className={classes.courseCardReviewAvatar}
-                              alt={review.authorName}
-                              {...review.authorPhoto}
-                            />
-                          ) : (
-                            ''
-                          )
-                        )}
-                      </Grid>
-                      <Grid
-                        item
-                        container
-                        alignItems='center'
-                        justify='flex-end'
-                        xs={6}
-                      >
-                        <NoSsr>
-                          <i
-                            className={clsx(
-                              'fas fa-star',
-                              classes.courseCardReviewStar
-                            )}
-                          />
-                        </NoSsr>
-                        <Typography
-                          component='span'
-                          variant='body1'
-                          className={classes.fontWeight700}
-                        >
-                          {item.score}
-                        </Typography>
-                        <Typography
-                          noWrap
-                          component='span'
-                          variant='body2'
-                          color='textSecondary'
-                          className={classes.reviewCount}
-                        >
-                          ({item.reviewCount} reviews)
-                        </Typography>
-                      </Grid>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <LearnMoreLink
-                        href='/single-recipe'
-                        title='Learn more'
+                    <Grid
+                      item
+                      container
+                      alignItems='center'
+                      justify='flex-end'
+                      xs={4}
+                    >
+                      <NoSsr>
+                        <i
+                          className={clsx(
+                            'fas fa-star',
+                            classes.courseCardReviewStar
+                          )}
+                        />
+                      </NoSsr>
+                      <Typography
+                        component='span'
                         variant='body1'
-                        color='primary'
-                      />
+                        className={classes.fontWeight700}
+                      >
+                        5
+                      </Typography>
+                      <Typography
+                        noWrap
+                        component='span'
+                        variant='body2'
+                        color='textSecondary'
+                        className={classes.reviewCount}
+                      >
+                        (12 reviews)
+                      </Typography>
                     </Grid>
                   </Grid>
-                }
-              />
-            </Grid>
-          ) : (
-            ''
-          )
-        )}
+                  <Grid item container justify='space-between' xs={12}>
+                    <Grid item container xs={6} wrap='nowrap'></Grid>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <LearnMoreLink
+                      href={'/single-recipe/' + item._id}
+                      title='Learn more'
+                      variant='body1'
+                      color='primary'
+                    />
+                  </Grid>
+                </Grid>
+              }
+            />
+          </Grid>
+        ))}
       </Grid>
     </div>
   );

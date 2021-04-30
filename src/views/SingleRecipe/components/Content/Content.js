@@ -36,6 +36,24 @@ const TOGGLE_FAV_RECIPE = gql`
   }
 `;
 
+const CREATE_RATING_RECIPE = gql`
+  mutation addRating($userID: ID!, $recipeID: ID!, $rating: Int!) {
+    addRating(user: $userID, recipe: $recipeID, rating: $rating) {
+      _id
+      rating
+    }
+  }
+`;
+
+const EDIT_RATING_RECIPE = gql`
+  mutation editRating($ratingID: ID!, $rating: Int!) {
+    modifyRating(_id: $ratingID, rating: $rating) {
+      _id
+      rating
+    }
+  }
+`;
+
 const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: theme.spacing(2),
@@ -77,7 +95,7 @@ const StyledRating = withStyles({
 // }, [formState.values]);
 
 const Content = (props) => {
-  const { favrecipe, data, className, ...rest } = props;
+  const { rating, favrecipe, data, className, ...rest } = props;
 
   const classes = useStyles();
   const items = [];
@@ -88,12 +106,16 @@ const Content = (props) => {
 
   const recipeID = data._id;
   const userID = useSelector(userSelector)._id;
-  console.log('recipeID: ', recipeID);
-  console.log('userID: ', userID);
 
   const [addFavRecipe, resultAddFav] = useMutation(CREATE_FAV_RECIPE);
 
   const [modifyFavRecipe, resultModifyFav] = useMutation(TOGGLE_FAV_RECIPE);
+
+  const [addRating, resultAddRating] = useMutation(CREATE_RATING_RECIPE);
+
+  const [editRating, resultModifyRating] = useMutation(EDIT_RATING_RECIPE);
+
+  const [userRating, setUserRating] = useState(rating ? rating.rating : 0);
 
   const [isUserFav, setIsUserFav] = useState(
     favrecipe ? favrecipe.isFav : false
@@ -116,7 +138,26 @@ const Content = (props) => {
             window.location.reload();
           })
           .catch((err) => console.log(err));
-    // setIsUserFav(!isUserFav);
+  };
+
+  const onChangeRate = (e) => {
+    e.persist();
+
+    rating
+      ? editRating({
+          variables: { ratingID: rating._id, rating: parseInt(e.target.value) },
+        })
+          .then((data) => {
+            setUserRating(parseInt(e.target.value));
+          })
+          .catch((err) => console.log(err))
+      : addRating({
+          variables: { userID, recipeID, rating: parseInt(e.target.value) },
+        })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((err) => console.log(err));
   };
 
   const handleClickFav = () => {};
@@ -188,7 +229,12 @@ const Content = (props) => {
         })}
       </div>
       <div>
-        <Rating name='size-medium' defaultValue={2} size='large' />
+        <Rating
+          onChange={onChangeRate}
+          name='size-medium'
+          value={userRating}
+          size='large'
+        />
         <div style={{ marginRight: '2rem', float: 'right' }}>
           <StyledRating
             size='large'

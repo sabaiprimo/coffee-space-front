@@ -38,7 +38,18 @@ const Main = ({ children, themeToggler, themeMode }) => {
     articles: {
       title: 'Articles',
       id: 'article-pages',
-      href: '/blog-articles',
+      // href: '/blog-articles',
+      expand: true,
+      pages: [
+        {
+          title: 'Explore Articles',
+          href: '/blog-articles',
+        },
+        {
+          title: 'Publish Article',
+          href: '/create-article',
+        },
+      ],
     },
     account: {
       expand: true,
@@ -53,9 +64,25 @@ const Main = ({ children, themeToggler, themeMode }) => {
           title: 'Security',
           href: '/account/?pid=security',
         },
+        // {
+        //   title: 'Notifications',
+        //   href: '/account/?pid=notifications',
+        // },
         {
-          title: 'Notifications',
-          href: '/account/?pid=notifications',
+          href: '/account/?pid=myArticle',
+          title: 'My Article',
+        },
+        {
+          href: '/account/?pid=myRecipe',
+          title: 'My Recipe',
+        },
+        {
+          href: '/account/?pid=favArticle',
+          title: 'Favortie Article',
+        },
+        {
+          href: '/account/?pid=favRecipe',
+          title: 'Favorite Recipe',
         },
       ],
     },

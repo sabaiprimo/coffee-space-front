@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { colors, Typography, Grid } from '@material-ui/core';
 import { Image } from 'components/atoms';
 import { CardProduct } from 'components/organisms';
-
+import moment from 'moment';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -78,6 +78,7 @@ const SidebarArticles = (props) => {
   const { data, className, ...rest } = props;
   const classes = useStyles();
 
+  console.log(data[0].issueDate);
   const BlogMediaContent = (props) => (
     <Image
       {...props}
@@ -110,7 +111,8 @@ const SidebarArticles = (props) => {
       </Typography>
       <Typography variant='caption' color='textPrimary'>
         <i>
-          {props.author.name} - {props.date}
+          {props.author.displayName} -{' '}
+          {moment(props.date).format('Do MMM YYYY')}
         </i>
       </Typography>
     </div>
@@ -145,7 +147,7 @@ const SidebarArticles = (props) => {
                   title={item.title}
                   subtitle={item.subtitle}
                   author={item.author}
-                  date={item.date}
+                  date={item.issueDate}
                   tags={item.tags}
                 />
               }

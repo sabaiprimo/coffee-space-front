@@ -14,6 +14,7 @@ import {
   SidebarNewsletter,
   Tags,
 } from './components';
+import { gql, useLazyQuery, useQuery } from '@apollo/client';
 
 import {
   popularNews,
@@ -40,6 +41,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const GET_LATEST_ARTICLE = gql`
+  query getLatestArticle($limit: Int) {
+    articleLatest(limit: $limit) {
+      _id
+      title
+      subtitle
+      headline
+      author {
+        _id
+        displayName
+      }
+      cover {
+        src
+      }
+      content {
+        textNumber
+        text
+        images
+      }
+      issueDate
+      tags
+    }
+  }
+`;
+
 const BrowseArticles = () => {
   const classes = useStyles();
 
@@ -47,6 +73,14 @@ const BrowseArticles = () => {
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
+
+  const queryLatestArticle = useQuery(GET_LATEST_ARTICLE, {
+    variables: { limit: 3 },
+  });
+
+  if (queryLatestArticle.loading) {
+    return <p>Loading..</p>;
+  }
 
   return (
     <div className={classes.root}>
@@ -60,23 +94,14 @@ const BrowseArticles = () => {
       <Section>
         <Grid container spacing={isMd ? 4 : 2}>
           <Grid item xs={12} md={8}>
-            <LatestStories data={latestStories} />
+            <LatestStories data={queryLatestArticle.data.articleLatest} />
           </Grid>
           <Grid item xs={12} md={4}>
             <SidebarArticles data={sidebarArticles} />
           </Grid>
         </Grid>
       </Section>
-      <SectionAlternate>
-        <Grid container spacing={isMd ? 4 : 0}>
-          <Grid item xs={12} md={8}>
-            <MostViewedArticles data={mostViewedArticles} />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <SidebarNewsletter className={classes.sidebarNewsletter} />
-          </Grid>
-        </Grid>
-      </SectionAlternate>
+
       {/* <Section>
         <Grid container spacing={isMd ? 4 : 2}>
           <Grid item xs={12} md={8}>

@@ -148,7 +148,13 @@ const Topbar = ({
         id: 'browse-recipe-page',
         href: '/browse-recipe',
       };
-  const articlePages = pages.articles;
+  const articles = displayName
+    ? pages.articles
+    : {
+        title: 'Explore Articles',
+        id: 'explore-article-page',
+        href: '/blog-articles',
+      };
   const account = displayName
     ? pages.account
     : {
@@ -188,6 +194,17 @@ const Topbar = ({
     );
   };
 
+  const ArticlePages = () => {
+    const { pages } = articles;
+    return (
+      <div className={classes.menu}>
+        <div className={classes.menuItem}>
+          <MenuGroup item={pages} />
+        </div>
+      </div>
+    );
+  };
+
   const AccountPages = () => {
     const { pages } = account;
     return (
@@ -210,7 +227,7 @@ const Topbar = ({
     if (id === 'recipe-pages') {
       return <RecipePages />;
     }
-    if (id === 'supported-pages') {
+    if (id === 'article-pages') {
       return <ArticlePages />;
     }
     if (id === 'account') {
@@ -233,7 +250,7 @@ const Topbar = ({
       <div className={classes.flexGrow} />
       <Hidden smDown>
         <List disablePadding className={classes.navigationContainer}>
-          {[recipes, articlePages, account].map((page, i) =>
+          {[recipes, articles, account].map((page, i) =>
             page.expand ? (
               <div key={page.id}>
                 <ListItem

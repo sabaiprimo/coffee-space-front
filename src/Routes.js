@@ -19,10 +19,14 @@ import {
   NotFoundCover as NotFoundCoverView,
   SigninSimple as SigninSimpleView,
   SignupCover as SignupCoverView,
+  LisArticle as ListArticleView,
+  CreateArticle as CreateArticleView,
+  EditRecipe as EditRecipeView,
 } from './views';
 import { gql, useQuery } from '@apollo/client';
 import { setUserProfile } from './features/user/UserSlice.js';
 import { useSelector, useDispatch } from 'react-redux';
+import ListArticle from 'views/ListArticle';
 
 const GET_USER_PROFILE = gql`
   query getUserProfile {
@@ -98,11 +102,44 @@ const Routes = () => {
       />
       <Route
         exact
+        path='/edit-recipe/:id'
+        render={(matchProps) => (
+          <WithLayout
+            {...matchProps}
+            component={EditRecipeView}
+            layout={MainLayout}
+          />
+        )}
+      />
+      <Route
+        exact
+        path='/create-article'
+        render={(matchProps) => (
+          <WithLayout
+            {...matchProps}
+            component={CreateArticleView}
+            layout={MainLayout}
+          />
+        )}
+      />
+      <Route
+        exact
         path='/blog-articles'
         render={(matchProps) => (
           <WithLayout
             {...matchProps}
             component={BrowseArticlesView}
+            layout={MainLayout}
+          />
+        )}
+      />
+      <Route
+        exact
+        path='/list-articles'
+        render={(matchProps) => (
+          <WithLayout
+            {...matchProps}
+            component={ListArticleView}
             layout={MainLayout}
           />
         )}

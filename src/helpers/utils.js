@@ -53,3 +53,21 @@ export const uploadFiles = (filesObj) => {
   return imageLinks;
   // setMessage([]);
 };
+
+export const compareDateFromNow = (dateToCompare) => {
+  const nowDate = new Date();
+  const compareDate = new Date(dateToCompare);
+  const diff = nowDate - compareDate;
+  let returnString = '';
+  if (diff > 30 * 24 * 3600e3) {
+    return 'More than 1 month ago';
+  } else if (diff > 24 * 3600e3) {
+    return Math.floor(diff / (24 * 3600e3)) + ' days ago';
+  } else if (diff > 3600e3) {
+    return Math.floor(diff / 3600e3) + ' hours ago';
+  } else if (diff > 60e3) {
+    return Math.floor(diff / 60e3) + ' minutes ago';
+  } else {
+    return Math.floor(diff / 1e3) + ' seconds ago';
+  }
+};

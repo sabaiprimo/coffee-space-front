@@ -12,6 +12,8 @@ import {
 import { gql, useMutation } from '@apollo/client';
 import { userSelector } from '../../../../features/user/UserSlice';
 import { useSelector } from 'react-redux';
+
+import moment from 'moment';
 const REPLY_COMMENT = gql`
   mutation replyComment($recipeID: ID, $userID: ID, $context: String) {
     addComment(recipeID: $recipeID, userID: $userID, context: $context) {
@@ -80,16 +82,12 @@ const CommentSection = (props) => {
 
   React.useEffect(() => {
     if (resultCommentMutation.data) {
-      console.log(resultCommentMutation.data);
       window.location.reload();
     }
   }, [resultCommentMutation.data]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // console.log(userID);
-    // console.log(commentForm);
-    // console.log('recipeID: ', recipeID);
     if (commentForm) {
       replyComment({
         variables: {
@@ -120,7 +118,7 @@ const CommentSection = (props) => {
                   </h4>
                   <p style={{ textAlign: 'left' }}>{value.context} </p>
                   <p style={{ textAlign: 'left', color: 'gray' }}>
-                    posted 1 minute ago
+                    posted {moment(value.commentDate).fromNow()}
                   </p>
                 </Grid>
               </Grid>

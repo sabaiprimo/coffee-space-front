@@ -37,7 +37,7 @@ const GET_RECIPE_INFO = gql`
       }
       author {
         _id
-        firstName
+        displayName
       }
       images {
         src
@@ -66,6 +66,69 @@ const GET_FAVRECIPE_BY_USER = gql`
     favRecipe(userID: $userID, recipeID: $recipeID) {
       _id
       isFav
+    }
+  }
+`;
+
+const GET_RATING_RECIPE_BY_BUYER = gql`
+  query getRatingRecipe($userID: ID!, $recipeID: ID!) {
+    rateRecipe(userID: $userID, recipeID: $recipeID) {
+      _id
+      rating
+    }
+  }
+`;
+
+const GET_LATEST_ARTICLE = gql`
+  query getLatestArticle($limit: Int) {
+    articleLatest(limit: $limit) {
+      _id
+      title
+      subtitle
+      headline
+      author {
+        _id
+        displayName
+      }
+      cover {
+        src
+      }
+      content {
+        textNumber
+        text
+        images
+      }
+      issueDate
+      tags
+    }
+  }
+`;
+
+const GET_RECCOMMEND_RECIPE = gql`
+  query getRecommendRecipe($limit: Int, $recipeID: ID) {
+    recommendRecipe(limit: $limit, recipeID: $recipeID) {
+      _id
+      title
+      description
+      preparationTime
+      totalTime
+      serving
+      roastLevel
+      level
+      ingredients
+      equipments
+      directions {
+        step
+        content
+      }
+      author {
+        _id
+        displayName
+        pictureProfile
+      }
+      images {
+        src
+      }
     }
   }
 `;
@@ -103,10 +166,29 @@ const SingleRecipe = () => {
     variables: { recipeID, userID },
   });
 
-  if (queryRecipe.loading || queryComment.loading || queryFavRecipe.loading) {
+  const queryRating = useQuery(GET_RATING_RECIPE_BY_BUYER, {
+    variables: { recipeID, userID },
+  });
+
+  const queryLatestArticle = useQuery(GET_LATEST_ARTICLE, {
+    variables: { limit: 3 },
+  });
+
+  const queryRecommendRecipe = useQuery(GET_RECCOMMEND_RECIPE, {
+    variables: { limit: 3, recipeID },
+  });
+
+  if (
+    queryRecipe.loading ||
+    queryComment.loading ||
+    queryFavRecipe.loading ||
+    queryRating.loading ||
+    queryLatestArticle.loading ||
+    queryRecommendRecipe.loading
+  ) {
     return <p>Loading..</p>;
   }
-
+  console.log('reccomend Recipe', queryRecommendRecipe);
   return (
     <div className={classes.root}>
       {/* <Hero
@@ -123,6 +205,7 @@ const SingleRecipe = () => {
             <br></br>
             <Divider />
             <Content
+              rating={queryRating.data.rateRecipe}
               favrecipe={queryFavRecipe.data.favRecipe}
               data={queryRecipe.data.recipe}
             />
@@ -135,13 +218,13 @@ const SingleRecipe = () => {
             <Divider />
           </Grid> */}
           <Grid item xs={12} md={4}>
-            <SidebarArticles data={sidebarArticles} />
+            <SidebarArticles data={queryLatestArticle.data.articleLatest} />
             <SidebarNewsletter className={classes.sidebarNewsletter} />
           </Grid>
         </Grid>
       </Section>
       <SectionAlternate>
-        <SimilarStories data={popularCourses} />
+        <SimilarStories data={queryRecommendRecipe.data.recommendRecipe} />
       </SectionAlternate>
       <SectionAlternate className={classes.footerNewsletterSection}>
         <FooterNewsletter />

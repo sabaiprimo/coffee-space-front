@@ -4,7 +4,17 @@ import { parse } from 'query-string';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, List, ListItem, Grid, Typography } from '@material-ui/core';
 import { SectionAlternate, CardBase } from 'components/organisms';
-import { Hero, General, Security, Notifications, Billing } from './components';
+import {
+  Hero,
+  General,
+  Security,
+  Notifications,
+  Billing,
+  MyArticle,
+  FavArticle,
+  FavRecipe,
+  MyRecipe,
+} from './components';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,10 +80,30 @@ const subPages = [
     href: '/account/?pid=security',
     title: 'Security',
   },
+  // {
+  //   id: 'notifications',
+  //   href: '/account/?pid=notifications',
+  //   title: 'Notifications',
+  // },
   {
-    id: 'notifications',
-    href: '/account/?pid=notifications',
-    title: 'Notifications',
+    id: 'myArticle',
+    href: '/account/?pid=myArticle',
+    title: 'My Article',
+  },
+  {
+    id: 'myRecipe',
+    href: '/account/?pid=myRecipe',
+    title: 'My Recipe',
+  },
+  {
+    id: 'favArticle',
+    href: '/account/?pid=favArticle',
+    title: 'Favorite Article',
+  },
+  {
+    id: 'favRecipe',
+    href: '/account/?pid=favRecipe',
+    title: 'Favorite Recipe',
   },
   // {
   //   id: 'billing',
@@ -136,8 +166,20 @@ const Account = (props = {}) => {
               <TabPanel value={pageId} index={'security'}>
                 <Security />
               </TabPanel>
-              <TabPanel value={pageId} index={'notifications'}>
+              {/* <TabPanel value={pageId} index={'notifications'}>
                 <Notifications />
+              </TabPanel> */}
+              <TabPanel value={pageId} index={'myArticle'}>
+                <MyArticle />
+              </TabPanel>
+              <TabPanel value={pageId} index={'myRecipe'}>
+                <MyRecipe />
+              </TabPanel>
+              <TabPanel value={pageId} index={'favRecipe'}>
+                <FavRecipe />
+              </TabPanel>
+              <TabPanel value={pageId} index={'favArticle'}>
+                <FavArticle />
               </TabPanel>
               {/* <TabPanel value={pageId} index={'billing'}>
                 <Billing />

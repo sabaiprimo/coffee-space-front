@@ -86,7 +86,7 @@ const Recipes = (props) => {
             </span>
           ) : (
             <span>
-              Recipe begin with{' '}
+              Recipes contain{' '}
               <Typography color='secondary' variant='inherit' component='span'>
                 {searchtitle}
               </Typography>
