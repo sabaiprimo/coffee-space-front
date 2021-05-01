@@ -9,15 +9,20 @@ import {
   Button,
   Divider,
   NativeSelect,
+  GridListTile,
+  GridList,
+  GridListTileBar,
+  IconButton,
 } from '@material-ui/core';
+
 import { DropzoneArea } from 'material-ui-dropzone';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSelector, useDispatch } from 'react-redux';
 import { userSelector } from '../../../../features/user/UserSlice';
-
+import DeleteIcon from '@material-ui/icons/Delete';
 import { upload } from '../../../../helpers/utils';
 import validate from 'validate.js';
-import { DirectionsWalkRounded, ImageSearch } from '@material-ui/icons';
+import { ImageSearch } from '@material-ui/icons';
 
 const schema = {
   title: {
@@ -33,26 +38,26 @@ const schema = {
   // images: { allowEmpty: false, message: 'is required' },
 };
 
-const CREATE_ARTICLE = gql`
-  mutation createArticle(
+const UPDATE_ARTICLE = gql`
+  mutation updateArticle(
+    $_id: ID!
     $title: String
     $subtitle: String
     $headline: String
-    $author: ID!
     $cover: coverImageInput
-    $sentContent: [contentItemInput]
-    $tags: [String]
+    $content: [contentItemInput]
     $issueDate: DateTime
+    $tags: [String]
   ) {
-    addArticle(
+    modifyArticle(
+      _id: $_id
       title: $title
       subtitle: $subtitle
       headline: $headline
-      author: $author
       cover: $cover
-      content: $sentContent
-      tags: $tags
+      content: $content
       issueDate: $issueDate
+      tags: $tags
     ) {
       _id
       title
@@ -91,39 +96,65 @@ const useStyles = makeStyles((theme) => ({
       background: theme.palette.background.paper,
     },
   },
+  gridList: {
+    height: 200,
+    objectFit: 'cover',
+    border: `4px solid ${theme.palette.alternate.dark}`,
+    boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
+  },
+  gridListTile: {
+    objectFit: 'cover',
+    borderRadius: '1rem',
+  },
 }));
 
 const MainForm = (props) => {
-  const { className, ...rest } = props;
+  const { data, className, ...rest } = props;
   const classes = useStyles();
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
   const userProfile = useSelector(userSelector);
-
-  const [createArticle, resultArticle] = useMutation(CREATE_ARTICLE);
-
-  const [contentForm, setContentForm] = useState([]);
-  const [isNeedCont, setIsNeedCont] = useState(true);
-  const [tagForm, setTagForm] = useState([]);
-  const [tagNo, setTagNo] = useState(1);
+  let initContentForm = [...data.content];
+  for (let n = 0; n < initContentForm.length; n++) {
+    initContentForm[n] = {
+      ...initContentForm[n],
+      images: [],
+    };
+  }
+  const [updateArticle, resultArticle] = useMutation(UPDATE_ARTICLE);
+  const [covImgShow, setCovImgShow] = useState(data.cover.src);
+  const [contentForm, setContentForm] = useState(initContentForm);
+  const initIsNeedCont =
+    data.content[data.content.length - 1].images.length > 0 ? false : true;
+  // console.log('initIsNeedCont: ', initIsNeedCont);
+  const [isNeedCont, setIsNeedCont] = useState(initIsNeedCont);
+  const [tagForm, setTagForm] = useState(data.tags);
+  const [tagNo, setTagNo] = useState(data.tags.length);
 
   const [formState, setFormState] = React.useState({
     isValid: false,
-    values: {},
+    values: {
+      title: data.title,
+      subtitle: data.subtitle,
+      headline: data.headline,
+      content: initContentForm,
+      tags: data.tags,
+    },
     touched: {},
     errors: {},
   });
+
   const hasError = (field) =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
-  // React.useEffect(() => {
-  //   let isMounted = true; // note this flag denote mount status
-  //   return () => {
-  //     isMounted = false;
-  //   }; // use effect cleanup to set flag false, if unmounted
-  // });
+  const handleSetCover = (file) => {
+    if (file.length > 0) {
+      setFile(file);
+      setCovImgShow();
+    }
+  };
 
   React.useEffect(() => {
     async function checkErrorAndUpdateState() {
@@ -158,9 +189,78 @@ const MainForm = (props) => {
 
   const [filesObj, setFile] = useState({ file: [] });
 
+  const initContToRender = [];
+  const initImageShow = [];
+  for (const contentItem of data.content) {
+    if (contentItem.images.length > 0) {
+      initContToRender.push({
+        content: true,
+        image: true,
+      });
+      initImageShow.push(contentItem.images);
+    } else {
+      initContToRender.push({
+        content: true,
+      });
+      initImageShow.push([]);
+    }
+  }
+
+  const handleDeleteShowImage = (e, idx, key) => {
+    let tempImageContentShow = [...imageContentShow];
+
+    if (tempImageContentShow[idx].length === 1) {
+      tempImageContentShow[idx] = [];
+    } else {
+      let tempChangeArray = Array.from(tempImageContentShow[idx]);
+      tempChangeArray.splice(key, 1);
+      tempImageContentShow[idx] = tempChangeArray;
+    }
+    setImageContentShow(tempImageContentShow);
+  };
+
+  const [imageContentShow, setImageContentShow] = useState(initImageShow);
+
+  let imageContentShowList = [];
+
+  imageContentShow.forEach((imageContent, idx) => {
+    imageContentShowList.push(
+      <div className={classes.form}>
+        {imageContent.length > 0 ? (
+          <GridList className={classes.gridList} cols={3} key={idx}>
+            {imageContent.map((image, key) => {
+              return (
+                <GridListTile className={classes.gridListTile} key={key}>
+                  <img src={image} />
+                  <GridListTileBar
+                    titlePosition='bottom'
+                    actionIcon={
+                      <IconButton
+                        onClick={(e) => handleDeleteShowImage(e, idx, key)}
+                        edge='end'
+                        aria-label='delete'
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                    actionPosition='right'
+                    className={classes.titleBar}
+                  />
+                </GridListTile>
+              );
+            })}
+          </GridList>
+        ) : (
+          ''
+        )}
+      </div>
+    );
+  });
+  // imageContentShow;
+
   const [contentRender, setContentRender] = useState({
-    lastStep: 1,
-    contentToRender: [{ content: true }],
+    lastStep: data.content.length,
+    contentToRender: initContToRender,
   });
 
   const contentList = [];
@@ -190,27 +290,30 @@ const MainForm = (props) => {
   };
 
   const manageContentFileState = (idx, files) => {
-    let tempContents = [...contentForm];
-    let tempChange = tempContents[idx];
+    if (files.length > 0) {
+      let tempContents = [...contentForm];
+      let tempChange = tempContents[idx];
 
-    tempChange = {
-      ...tempChange,
-      images: files,
-    };
+      tempChange = {
+        ...tempChange,
+        images: files,
+      };
 
-    tempContents[idx] = tempChange;
-    setContentForm(tempContents);
-    setFormState((formState) => ({
-      ...formState,
-      values: {
-        ...formState.values,
-        content: tempContents,
-      },
-      touched: {
-        ...formState.touched,
-        content: true,
-      },
-    }));
+      tempContents[idx] = tempChange;
+
+      setContentForm(tempContents);
+      setFormState((formState) => ({
+        ...formState,
+        values: {
+          ...formState.values,
+          content: tempContents,
+        },
+        touched: {
+          ...formState.touched,
+          content: true,
+        },
+      }));
+    }
   };
 
   const handleChange = (event) => {
@@ -239,7 +342,30 @@ const MainForm = (props) => {
     setIsNeedCont(true);
     setContentRender(tempContent);
   };
-
+  // Cannot complete due to behavior of dropzone area
+  // const handleDeleteContent = (key) => {
+  //   let tempRender = { ...contentRender };
+  //   let tempToRender = [...tempRender.contentToRender];
+  //   console.log('before: ', tempRender);
+  //   tempToRender.splice(key, 1);
+  //   tempRender.lastStep = tempRender.lastStep - 1;
+  //   tempRender.contentToRender = tempToRender;
+  //   console.log('After: ', tempRender);
+  //   let tempFormState = { ...formState };
+  //   let tempContentForm = [...tempFormState.values.content];
+  //   console.log('tempContentForm: ', tempContentForm);
+  //   tempContentForm.splice(key, 1);
+  //   console.log('tempContentFormAfter: ', tempContentForm);
+  //   tempFormState.values.content = tempContentForm;
+  //   let tempImageList = [...imageContentShow];
+  //   tempImageList.splice(key, 1);
+  //   // formState.values.content[k];
+  //   console.log('After showlist: ', tempImageList);
+  //   setContentRender(tempRender);
+  //   setFormState(tempFormState);
+  //   setContentForm(tempContentForm);
+  //   setImageContentShow(tempImageList);
+  // };
   const handleClickImage = () => {
     let tempContent = { ...contentRender };
     tempContent.contentToRender[contentRender.lastStep - 1] = {
@@ -264,6 +390,7 @@ const MainForm = (props) => {
             multiline
             rows={1}
             required
+            value={formState.values.tags[i] ? formState.values.tags[i] : ''}
           />
         </div>
       </Grid>
@@ -274,7 +401,24 @@ const MainForm = (props) => {
       <Grid item xs={12} key={k}>
         {contentRender.contentToRender[k].content ? (
           <div className={classes.form}>
-            <p className={classes.fontWeight600}>Content {k + 1}</p>
+            <Grid
+              justify='space-between' // Add it here :)
+              container
+            >
+              <Grid item>
+                <p className={classes.fontWeight600}>Content {k + 1}</p>
+              </Grid>
+              {/* <Grid item>
+                <IconButton
+                  onClick={(e) => handleDeleteContent(k)}
+                  edge='end'
+                  aria-label='delete'
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid> */}
+            </Grid>
+
             <TextField
               onChange={({ target }) => manageContentstate(k, target.value)}
               variant='outlined'
@@ -283,6 +427,11 @@ const MainForm = (props) => {
               multiline
               rows={8}
               required
+              value={
+                formState.values.content[k]
+                  ? formState.values.content[k].text
+                  : ''
+              }
             />
             <br></br>
             <br></br>
@@ -299,11 +448,19 @@ const MainForm = (props) => {
             >
               Attach Images for content {k + 1}
             </Typography>
+            {imageContentShowList[k]}{' '}
             <div className={classes.bgBlue}>
               <div className={classes.form}>
                 <DropzoneArea
-                  onChange={(files) => manageContentFileState(k, { files })}
-                  required
+                  onChange={(files) => manageContentFileState(k, files)}
+                  require={
+                    imageContentShow[k]
+                      ? imageContentShow[k].length > 0
+                        ? false
+                        : true
+                      : true
+                  }
+                  initialFiles={formState.values.content[k].images}
                 />
               </div>
             </div>
@@ -317,28 +474,39 @@ const MainForm = (props) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (filesObj.file.length == 0) {
+    if (filesObj.file.length == 0 && !covImgShow) {
       alert('Please add some images');
     }
-    if (formState.isValid && filesObj.file.length > 0) {
+    if (formState.isValid && (filesObj.file.length > 0 || covImgShow)) {
       const file = Array.from(filesObj.file);
       // console.log(files);
       let coverImageLink = '';
-      // const uploadPromises =
-      let uploadImage = await upload(0, file[0]);
-      coverImageLink = {
-        src: uploadImage.data.fileLocation,
-      };
-      console.log(coverImageLink);
+      if (filesObj.file.length > 0) {
+        let uploadImage = await upload(0, file[0]);
+        coverImageLink = {
+          src: uploadImage.data.fileLocation,
+        };
+      } else {
+        coverImageLink = {
+          src: covImgShow,
+        };
+      }
+
+      console.log('coverImageLink: ', coverImageLink);
+      console.log('contentForm: ', contentForm);
+      console.log('old image files: ', imageContentShow);
       // uplaod image -> content
       let contents = [];
+      let idxContent = 0;
       for (const content of contentForm) {
         let tempContent = { ...content };
-        let tempImageLink = [];
-        console.log(content);
+        let tempImageLink = imageContentShow[idxContent]
+          ? Array.from(imageContentShow[idxContent])
+          : [];
         if (tempContent.images) {
-          if (tempContent.images.files.length > 0) {
-            for (const file of tempContent.images.files) {
+          if (tempContent.images.length > 0) {
+            for (const file of tempContent.images) {
+              console.log('file to upload:', file);
               let uploadImage = await upload(0, file);
               await tempImageLink.push(uploadImage.data.fileLocation);
             }
@@ -346,6 +514,7 @@ const MainForm = (props) => {
         }
         tempContent = { ...tempContent, images: tempImageLink };
         await contents.push(tempContent);
+        idxContent++;
       }
 
       const title = formState.values.title;
@@ -353,25 +522,24 @@ const MainForm = (props) => {
       const headline = formState.values.headline;
       const coverImage = coverImageLink;
       const tags = formState.values.tags;
-      const author = userProfile._id;
+      console.log('tags: ', tags);
       let issueDate = new Date().toISOString();
       const sentContent = contents;
       console.log('sentContent: ', sentContent);
-
-      createArticle({
+      updateArticle({
         variables: {
+          _id: data._id,
           title,
           subtitle,
           headline,
           cover: coverImage,
           tags,
-          author,
-          sentContent,
+          content: sentContent,
           issueDate,
         },
       })
         .then(() => {
-          alert('Create new article complete');
+          alert('Update article complete');
           // setFormState({
           //   isValid: false,
           //   values: {},
@@ -379,7 +547,7 @@ const MainForm = (props) => {
           //   errors: {},
           // });
 
-          // window.location.reload();
+          window.location.reload();
         })
         .catch((error) => {
           alert(error);
@@ -427,6 +595,7 @@ const MainForm = (props) => {
                   fullWidth
                   type='text'
                   required
+                  value={formState.values.title ? formState.values.title : ''}
                 />
               </div>
             </div>
@@ -452,6 +621,9 @@ const MainForm = (props) => {
                   type='text'
                   rows={2}
                   required
+                  value={
+                    formState.values.subtitle ? formState.values.subtitle : ''
+                  }
                 />
               </div>
             </div>
@@ -475,6 +647,9 @@ const MainForm = (props) => {
                   fullWidth
                   type='text'
                   required
+                  value={
+                    formState.values.headline ? formState.values.headline : ''
+                  }
                 />
               </div>
             </div>
@@ -490,10 +665,33 @@ const MainForm = (props) => {
             </Typography>
             <div className={classes.bgBlue}>
               <div className={classes.form}>
+                {covImgShow ? (
+                  <GridList className={classes.gridList} cols={3}>
+                    <GridListTile className={classes.gridListTile}>
+                      <img src={covImgShow} />
+                      <GridListTileBar
+                        titlePosition='bottom'
+                        actionIcon={
+                          <IconButton
+                            onClick={() => setCovImgShow()}
+                            edge='end'
+                            aria-label='delete'
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        }
+                        actionPosition='right'
+                        className={classes.titleBar}
+                      />
+                    </GridListTile>
+                  </GridList>
+                ) : (
+                  ''
+                )}
+
                 <DropzoneArea
                   filesLimit={1}
-                  onChange={(file) => setFile({ file })}
-                  required
+                  onChange={(file) => handleSetCover(file)}
                 />
               </div>
             </div>
@@ -578,7 +776,7 @@ const MainForm = (props) => {
               size='large'
               // onClick={uploadFiles}
             >
-              Publish
+              Complete and Publish
             </Button>
           </Grid>
         </Grid>

@@ -11,3 +11,4 @@ export { default as SignupCover } from './SignupCover';
 export { default as LisArticle } from './ListArticle';
 export { default as CreateArticle } from './CreateArticle';
 export { default as EditRecipe } from './EditRecipe';
+export { default as EditArticle } from './EditArticle';

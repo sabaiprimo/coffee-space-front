@@ -22,6 +22,7 @@ import {
   LisArticle as ListArticleView,
   CreateArticle as CreateArticleView,
   EditRecipe as EditRecipeView,
+  EditArticle as EditArticleView,
 } from './views';
 import { gql, useQuery } from '@apollo/client';
 import { setUserProfile } from './features/user/UserSlice.js';
@@ -129,6 +130,17 @@ const Routes = () => {
           <WithLayout
             {...matchProps}
             component={BrowseArticlesView}
+            layout={MainLayout}
+          />
+        )}
+      />
+      <Route
+        exact
+        path='/edit-article/:id'
+        render={(matchProps) => (
+          <WithLayout
+            {...matchProps}
+            component={EditArticleView}
             layout={MainLayout}
           />
         )}
