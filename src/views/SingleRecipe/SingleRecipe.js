@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Divider } from '@material-ui/core';
 import { Section, SectionAlternate } from 'components/organisms';
-import { Switch, Route, Redirect, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Content,
   FooterNewsletter,
-  Hero,
   SidebarArticles,
   SidebarNewsletter,
   SimilarStories,
   GeneralInfo,
   CommentSection,
 } from './components';
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { content, sidebarArticles, popularCourses } from './data';
+import { gql, useQuery } from '@apollo/client';
 import { userSelector } from '../../features/user/UserSlice';
 import { useSelector } from 'react-redux';
 
@@ -94,7 +92,6 @@ const GET_LATEST_ARTICLE = gql`
         src
       }
       content {
-        textNumber
         text
         images
       }
@@ -188,15 +185,8 @@ const SingleRecipe = () => {
   ) {
     return <p>Loading..</p>;
   }
-  console.log('reccomend Recipe', queryRecommendRecipe);
   return (
     <div className={classes.root}>
-      {/* <Hero
-        cover={content.cover}
-        title={content.title}
-        subtitle={content.subtitle}
-        author={content.author}
-      /> */}
       <Section>
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
@@ -205,8 +195,10 @@ const SingleRecipe = () => {
             <br></br>
             <Divider />
             <Content
-              rating={queryRating.data.rateRecipe}
-              favrecipe={queryFavRecipe.data.favRecipe}
+              rating={queryRating.data ? queryRating.data.rateRecipe : ''}
+              favrecipe={
+                queryFavRecipe.data ? queryFavRecipe.data.favRecipe : ''
+              }
               data={queryRecipe.data.recipe}
             />
             <CommentSection
@@ -214,9 +206,7 @@ const SingleRecipe = () => {
               comments={queryComment.data.comments}
             />
           </Grid>
-          {/* <Grid item xs={12} md={8}>
-            <Divider />
-          </Grid> */}
+
           <Grid item xs={12} md={4}>
             <SidebarArticles data={queryLatestArticle.data.articleLatest} />
             <SidebarNewsletter className={classes.sidebarNewsletter} />

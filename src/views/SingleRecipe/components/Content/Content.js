@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import {
-  useMediaQuery,
-  Typography,
-  GridList,
-  GridListTile,
-  IconButton,
-  Divider,
-} from '@material-ui/core';
+import { useMediaQuery, Typography, Divider, Grid } from '@material-ui/core';
+import clsx from 'clsx';
 import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { userSelector } from '../../../../features/user/UserSlice';
-
+import Carousel from 'react-gallery-carousel';
+import 'react-gallery-carousel/dist/index.css';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Image } from 'components/atoms';
@@ -54,6 +49,16 @@ const EDIT_RATING_RECIPE = gql`
   }
 `;
 
+const GET_RATING_RECIPE = gql`
+  query getRating($recipeID: ID!) {
+    avgRatingRecipe(recipeID: $recipeID) {
+      _id
+      avgRate
+      reviews
+    }
+  }
+`;
+
 const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: theme.spacing(2),
@@ -74,6 +79,11 @@ const useStyles = makeStyles((theme) => ({
       marginRight: 0,
     },
   },
+  gridList: {
+    flexWrap: 'nowrap',
+    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+    transform: 'translateZ(0)',
+  },
 }));
 const StyledRating = withStyles({
   iconFilled: {
@@ -83,16 +93,6 @@ const StyledRating = withStyles({
     color: '#ff3d47',
   },
 })(Rating);
-
-// React.useEffect(() => {
-//   const errors = validate(formState.values, schema);
-
-//   setFormState((formState) => ({
-//     ...formState,
-//     isValid: errors ? false : true,
-//     errors: errors || {},
-//   }));
-// }, [formState.values]);
 
 const Content = (props) => {
   const { rating, favrecipe, data, className, ...rest } = props;
@@ -121,10 +121,10 @@ const Content = (props) => {
     favrecipe ? favrecipe.isFav : false
   );
 
-  // const isFav = queryFavRecipe.data.favRecipe
-  //   ? queryFavRecipe.data.favRecipe.isFav
-  //   : false;
-
+  const getAvgRate = useQuery(GET_RATING_RECIPE, { variables: { recipeID } });
+  if (getAvgRate.loading) {
+    return <p>Loading...</p>;
+  }
   const onChangeFav = (e) => {
     e.persist();
     favrecipe
@@ -142,13 +142,13 @@ const Content = (props) => {
 
   const onChangeRate = (e) => {
     e.persist();
-
     rating
       ? editRating({
           variables: { ratingID: rating._id, rating: parseInt(e.target.value) },
         })
           .then((data) => {
             setUserRating(parseInt(e.target.value));
+            window.location.reload();
           })
           .catch((err) => console.log(err))
       : addRating({
@@ -159,7 +159,6 @@ const Content = (props) => {
           })
           .catch((err) => console.log(err));
   };
-
   const handleClickFav = () => {};
 
   return (
@@ -228,26 +227,64 @@ const Content = (props) => {
           );
         })}
       </div>
-      <div>
-        <Rating
-          onChange={onChangeRate}
-          name='size-medium'
-          value={userRating}
-          size='large'
-        />
-        <div style={{ marginRight: '2rem', float: 'right' }}>
-          <StyledRating
+      <Carousel images={data.images} />
+      <br></br>
+      <br></br>
+      <br></br>
+      <Grid item container alignItems='center' justify='flex-start' xs={4}>
+        <Typography
+          component='span'
+          variant='body1'
+          className={classes.fontWeight700}
+        >
+          Rating:{' '}
+          {getAvgRate.data.avgRatingRecipe
+            ? getAvgRate.data.avgRatingRecipe.avgRate
+            : ''}{' '}
+        </Typography>
+        <Typography
+          noWrap
+          component='span'
+          variant='body2'
+          color='textSecondary'
+          className={classes.reviewCount}
+        >
+          (
+          {getAvgRate.data.avgRatingRecipe
+            ? getAvgRate.data.avgRatingRecipe.reviews
+            : 0}{' '}
+          {getAvgRate.data.avgRatingRecipe
+            ? getAvgRate.data.avgRatingRecipe.reviews > 1
+              ? 'reviews'
+              : 'review'
+            : 'review'}
+          )
+        </Typography>
+      </Grid>
+      {userID ? (
+        <div>
+          <Rating
+            onChange={onChangeRate}
+            name='size-medium'
+            value={userRating}
             size='large'
-            name='customized-color'
-            max={1}
-            value={parseInt(isUserFav * 1)}
-            onChange={onChangeFav}
-            // getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-            precision={1}
-            icon={<FavoriteIcon fontSize='inherit' />}
           />
+          <div style={{ marginRight: '2rem', float: 'right' }}>
+            <StyledRating
+              size='large'
+              name='customized-color'
+              max={1}
+              value={parseInt(isUserFav * 1)}
+              onChange={onChangeFav}
+              // getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+              precision={1}
+              icon={<FavoriteIcon fontSize='inherit' />}
+            />
+          </div>
         </div>
-      </div>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

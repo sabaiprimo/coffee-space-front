@@ -11,13 +11,12 @@ import {
   NativeSelect,
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
-import { gql, useQuery, useMutation } from '@apollo/client';
-import { useSelector, useDispatch } from 'react-redux';
+import { gql, useMutation } from '@apollo/client';
+import { useSelector } from 'react-redux';
 import { userSelector } from '../../../../features/user/UserSlice';
 
 import { upload } from '../../../../helpers/utils';
 import validate from 'validate.js';
-import { ImageSearch } from '@material-ui/icons';
 
 const schema = {
   title: {
@@ -52,8 +51,6 @@ const schema = {
   directions: {
     presence: { allowEmpty: false, message: 'is required' },
   },
-
-  // images: { allowEmpty: false, message: 'is required' },
 };
 
 const CREATE_RECIPE = gql`
@@ -146,13 +143,6 @@ const MainForm = (props) => {
   });
   const hasError = (field) =>
     formState.touched[field] && formState.errors[field] ? true : false;
-
-  // React.useEffect(() => {
-  //   let isMounted = true; // note this flag denote mount status
-  //   return () => {
-  //     isMounted = false;
-  //   }; // use effect cleanup to set flag false, if unmounted
-  // });
 
   React.useEffect(() => {
     async function checkErrorAndUpdateState() {
@@ -317,9 +307,8 @@ const MainForm = (props) => {
     }
     if (formState.isValid && filesObj.files.length > 0) {
       const files = Array.from(filesObj.files);
-      // console.log(files);
+
       let imageLinks = [];
-      // const uploadPromises =
 
       Promise.all(
         files.map(async (file, i) => {
@@ -328,7 +317,6 @@ const MainForm = (props) => {
             src: uploadImage.data.fileLocation,
             srcSet: uploadImage.data.fileLocation,
           });
-          console.log(imageLinks);
         })
       ).then(() => {
         const title = formState.values.title;
@@ -344,8 +332,6 @@ const MainForm = (props) => {
         const author = userProfile._id;
         let issueDate = new Date().toISOString();
 
-        console.log(directions);
-        console.log(imageLinks);
         createRecipe({
           variables: {
             title,
@@ -623,7 +609,6 @@ const MainForm = (props) => {
                 variant='outlined'
                 className={classes.addStepButton}
                 onClick={() => setEquipmentStep(equipmentStep + 1)}
-                // onChange={({ target }) => setDirection(target.value)}
               >
                 Add more equipment
               </Button>
@@ -680,7 +665,6 @@ const MainForm = (props) => {
               type='submit'
               color='primary'
               size='large'
-              // onClick={uploadFiles}
             >
               Create
             </Button>

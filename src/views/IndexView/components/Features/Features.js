@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Grid, colors, makeStyles } from '@material-ui/core';
 import { SectionHeader, IconAlternate } from 'components/molecules';
 import { CardBase, DescriptionListIcon } from 'components/organisms';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
   fontWeight900: {
@@ -10,52 +11,22 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const data = [
-  {
-    icon: 'fas fa-cubes',
-    color: colors.brown,
-    title: 'Is Coffee Good for You?',
-    subtitle:
-      'Yes! But it depends on the kind of coffee and the quantity. We’ve come a long way from the cans of Folgers that filled our grandparents’ cupboards, with our oat milk lattes, cold brews and Frappuccinos. Some of us are still very utilitarian about the drink while others perform elaborate rituals...',
-  },
-  {
-    icon: 'fas fa-palette',
-    color: colors.brown,
-    title: 'Health benefits and risks of drinking coffee',
-    subtitle:
-      'When people think of coffee, they usually think of its ability to provide an energy boost. However, according to some research, it can also offer some other important health benefits, such as a lower risk of liver cancer...',
-  },
-  {
-    icon: 'fas fa-code',
-    color: colors.brown,
-    title: 'Interesting coffee facts',
-    subtitle:
-      'The aroma of coffee contains more than 700 substances, and it is rich in caffeine. The original home of coffee…',
-  },
-  {
-    icon: 'fas fa-moon',
-    color: colors.brown,
-    title: 'Coffee from Nicaragua',
-    subtitle:
-      'Only Arabica coffee is grown in Nicaragua. The production area occupying more than 100 thousand hectares takes place primarily in…',
-  },
-  {
-    icon: 'fas fa-rocket',
-    color: colors.brown,
-    title: 'Two Famous Coffee Museums',
-    subtitle:
-      'We will discuss two interesting coffee museums on two different continents. The first will be a museum of one of the great powers of coffee, Brazil. The other, also a prestigious museum, is in Austria...',
-  },
-  {
-    icon: 'fas fa-hand-holding-heart',
-    color: colors.brown,
-    title: 'Coffee’s Influence on the Different Art Forms',
-    subtitle:
-      'Can a drink be synonymous with aesthetics? The question may seem a little bit strange. Taking some artistic forms, coffee…',
-  },
-];
+const checkTag = (tags) => {
+  if (tags.includes('caffeine') || tags.includes('danger')) {
+    return 'fas fa-exclamation-triangle';
+  } else if (tags.includes('store') || tags.includes('business')) {
+    return 'fas fa-store';
+  } else if (tags.includes('health')) {
+    return 'fas fa-briefcase-medical';
+  } else if (tags.includes('fact')) {
+    return 'fas fa-info-circle';
+  } else if (tags.includes('money')) {
+    return 'fas fa-dollar-sign';
+  }
+  return 'fas fa-coffee';
+};
 
-const Features = ({ className, ...rest }) => {
+const Features = ({ data, className, ...rest }) => {
   const classes = useStyles();
 
   return (
@@ -70,7 +41,7 @@ const Features = ({ className, ...rest }) => {
         }}
       />
       <Grid container spacing={2}>
-        {data.map((adv, index) => (
+        {data.map((article, index) => (
           <Grid
             key={index}
             item
@@ -81,25 +52,27 @@ const Features = ({ className, ...rest }) => {
             md={4}
             data-aos='fade-up'
           >
-            <CardBase
-              liftUp
-              variant='outlined'
-              style={{ borderTop: `5px solid ${adv.color}` }}
-            >
-              <DescriptionListIcon
-                icon={
-                  <IconAlternate
-                    fontIconClass={adv.icon}
-                    color={adv.color}
-                    shape='circle'
-                    size='small'
-                  />
-                }
-                title={adv.title}
-                subtitle={adv.subtitle}
-                align='left'
-              />
-            </CardBase>
+            <Link to={'/single-article/' + article._id}>
+              <CardBase
+                liftUp
+                variant='outlined'
+                style={{ borderTop: `5px solid ${colors.brown}` }}
+              >
+                <DescriptionListIcon
+                  icon={
+                    <IconAlternate
+                      fontIconClass={checkTag(article.tags)}
+                      color={colors.brown}
+                      shape='circle'
+                      size='small'
+                    />
+                  }
+                  title={article.title}
+                  subtitle={article.subtitle}
+                  align='left'
+                />
+              </CardBase>
+            </Link>
           </Grid>
         ))}
       </Grid>

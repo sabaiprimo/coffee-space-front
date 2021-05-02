@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { SectionHeader } from 'components/molecules';
 import { CardBase } from 'components/organisms';
 import {
   useMediaQuery,
@@ -10,25 +9,15 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  ListItemSecondaryAction,
   IconButton,
-  Avatar,
-  TextField,
-  Button,
   Divider,
 } from '@material-ui/core';
+import Pagination from '@material-ui/lab/Pagination';
+import { gql, useMutation } from '@apollo/client';
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-
-import AvatarUpload from '../AvatarUpload/AvatarUpload.js';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  userSelector,
-  setUserProfile,
-} from '../../../../features/user/UserSlice';
-import { gql, useMutation } from '@apollo/client';
-import validate from 'validate.js';
-
+import moment from 'moment';
 const useStyles = makeStyles((theme) => ({
   inputTitle: {
     fontWeight: 700,
@@ -50,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     height: 110,
     objectFit: 'cover',
     border: `4px solid ${theme.palette.alternate.dark}`,
-    // borderRadius: '100%',
     boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
   },
   listItem: {
@@ -74,15 +62,28 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
   },
 }));
-
+const DELETE_RECIPE = gql`
+  mutation deleteRecipe($recipeID: ID!) {
+    deleteRecipe(recipeID: $recipeID) {
+      _id
+    }
+  }
+`;
 const MyRecipe = (props) => {
-  const { className, ...rest } = props;
+  const { currentPage, totalPages, data, className, ...rest } = props;
+
   const classes = useStyles();
+  const [recipeData, setRecipeData] = useState(data);
+  const [deleteRecipe, resultDeleteMutation] = useMutation(DELETE_RECIPE);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleDeleteRecipe = (e, recipeID) => {
+    deleteRecipe({ variables: { recipeID } }).then(() => {
+      window.location.reload();
+    });
+  };
 
-    // window.location.replace('/');
+  const handleChange = (event, value) => {
+    window.location.href = '/account/?pid=myRecipe&pages=' + value;
   };
 
   const theme = useTheme();
@@ -92,70 +93,83 @@ const MyRecipe = (props) => {
 
   return (
     <div className={className} {...rest}>
-      <form name='password-reset-form' method='post' onSubmit={handleSubmit}>
-        <Grid container spacing={isMd ? 4 : 2}>
-          <Grid item xs={12}>
-            <Typography variant='h6' color='textPrimary'>
-              Basic Information
-            </Typography>
-          </Grid>
-          <Grid item xs={12}></Grid>
-          <Grid item xs={12}>
-            <Divider />
-          </Grid>
-
-          <Grid item xs={12} data-aos='fade-up'>
-            <CardBase className={classes.cardBase} liftUp>
-              <ListItem disableGutters className={classes.listItem}>
-                <ListItemAvatar className={classes.listItemAvatar}>
-                  {/* <Avatar className={classes.avatar} /> */}
-
-                  <img
-                    width='100px'
-                    // height='100'
-                    className={classes.avatar}
-                    src='https://cdn.shopify.com/s/files/1/1186/7382/files/coffee-around-the-world.jpg?v=1538683476'
-                  />
-                </ListItemAvatar>
-                {/* <ListItemIcon>
-                  <StarIcon />
-                </ListItemIcon> */}
-                {/* <ListItemText primary='Chelsea Otakan' /> */}
-                {/* <ListItemText primary='Chelsea Otakan' /> */}
-                {/* <ListItemText primary='Chelsea Otakan' /> */}
-                <ListItemText primary='Title' secondary='Wadawd' />
-                <ListItemText primary='Subtitle' secondary='Wadawd' />
-
-                <ListItemText primary='Publish Date' secondary='5' />
-                {/* <ListItemSecondaryAction> */}
-                <IconButton edge='end' aria-label='edit'>
-                  <EditIcon />
-                </IconButton>
-                <IconButton edge='end' aria-label='delete'>
-                  <DeleteIcon />
-                </IconButton>
-                {/* </ListItemSecondaryAction> */}
-                {/* <ListItemText
-                  className={classes.listItemText}
-                  primary='awdwad'
-                  secondary='awdawdawd'
-                  // primary={item.authorName}
-                  // secondary={item.title}
-                  primaryTypographyProps={{
-                    className: classes.title,
-                    variant: 'h6',
-                    align: isMd ? 'left' : 'center',
-                  }}
-                  secondaryTypographyProps={{
-                    color: 'textPrimary',
-                    align: isMd ? 'left' : 'center',
-                  }}
-                /> */}
-              </ListItem>
-            </CardBase>
-          </Grid>
+      <Grid container spacing={isMd ? 4 : 2}>
+        <Grid item xs={12}>
+          <Typography variant='h6' color='textPrimary'>
+            My Recipes
+          </Typography>
         </Grid>
-      </form>
+        <Grid item xs={12}></Grid>
+        <Grid item xs={12}>
+          <Divider />
+        </Grid>
+
+        <Grid item xs={12} data-aos='fade-up'>
+          {recipeData.length > 0 ? (
+            <CardBase className={classes.cardBase}>
+              {recipeData.map((item, idx) => {
+                return (
+                  <ListItem
+                    disableGutters
+                    className={classes.listItem}
+                    key={idx}
+                  >
+                    <ListItemAvatar
+                      href={'/single-recipe/' + item._id}
+                      className={classes.listItemAvatar}
+                    >
+                      <a href={'/single-recipe/' + item._id}>
+                        <img
+                          width='100px'
+                          // height='100'
+                          className={classes.avatar}
+                          src={item.images[0].src}
+                        />
+                      </a>
+                    </ListItemAvatar>
+
+                    <ListItemText primary='Title' secondary={item.title} />
+                    <ListItemText
+                      primary='Author'
+                      secondary={item.author.displayName}
+                    />
+
+                    <ListItemText
+                      primary='Issue Date'
+                      secondary={moment(item.issueDate).format('Do MMM YYYY')}
+                    />
+
+                    <IconButton
+                      href={'/edit-recipe/' + item._id}
+                      edge='end'
+                      aria-label='edit'
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={(e) => handleDeleteRecipe(e, item._id)}
+                      edge='end'
+                      aria-label='delete'
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItem>
+                );
+              })}
+            </CardBase>
+          ) : (
+            <Typography>You don't have any recipe yet</Typography>
+          )}
+        </Grid>
+        <Grid container justify='flex-end'>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            shape='rounded'
+            onChange={handleChange}
+          />
+        </Grid>
+      </Grid>
     </div>
   );
 };

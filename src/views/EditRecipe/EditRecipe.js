@@ -3,10 +3,9 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { parse } from 'query-string';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, List, ListItem, Grid, Typography } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { SectionAlternate, CardBase } from 'components/organisms';
-import { Hero, MainForm, GeneralInfoForm } from './components';
-import { useSelector, useDispatch } from 'react-redux';
+import { Hero, MainForm } from './components';
 import { gql, useQuery } from '@apollo/client';
 
 const GET_RECIPE_INFO = gql`
@@ -96,16 +95,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TabPanel = (props) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Box component='div' hidden={value !== index} {...other}>
-      {value === index && children}
-    </Box>
-  );
-};
-
 const EditRecipe = (props = {}) => {
   const classes = useStyles();
   let pageId = parse(window.location.search).pid || 'general';
@@ -117,7 +106,7 @@ const EditRecipe = (props = {}) => {
   if (queryRecipe.loading) {
     return <p>Loading..</p>;
   }
-  console.log(queryRecipe);
+
   return (
     <div className={classes.root}>
       <Hero />

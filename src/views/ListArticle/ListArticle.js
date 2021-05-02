@@ -1,34 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useMediaQuery, Grid } from '@material-ui/core';
-import { Section, SectionAlternate } from 'components/organisms';
-import {
-  Archive,
-  FeaturedArticles,
-  FooterNewsletter,
-  Hero,
-  LatestStories,
-  MostViewedArticles,
-  PopularNews,
-  SidebarArticles,
-  SidebarNewsletter,
-  Tags,
-} from './components';
+import { Section } from 'components/organisms';
+import { PopularNews } from './components';
+import { useLocation } from 'react-router-dom';
+import Pagination from '@material-ui/lab/Pagination';
+import { gql, useQuery } from '@apollo/client';
 
-import {
-  popularNews,
-  featuredArticles,
-  latestStories,
-  sidebarArticles,
-  mostViewedArticles,
-  archive,
-  tags,
-} from './data';
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
+const SEARCH_TITLE_ARTICLE = gql`
+  query searchArticleByTitle(
+    $filter: ArticleFilters
+    $limit: Int
+    $start: Int
+  ) {
+    articles(filter: $filter, limit: $limit, start: $start) {
+      _id
+      title
+      subtitle
+      headline
+      author {
+        _id
+        displayName
+        pictureProfile
+      }
+      cover {
+        src
+      }
+      content {
+        text
+        images
+      }
+      issueDate
+      tags
+    }
+  }
+`;
 
 const GET_LATEST_ARTICLE = gql`
-  query getLatestArticle($limit: Int) {
-    articleLatest(limit: $limit) {
+  query getLatestArticle($limit: Int, $start: Int) {
+    articleLatest(limit: $limit, start: $start) {
       _id
       title
       subtitle
@@ -41,7 +51,6 @@ const GET_LATEST_ARTICLE = gql`
         src
       }
       content {
-        textNumber
         text
         images
       }
@@ -50,6 +59,16 @@ const GET_LATEST_ARTICLE = gql`
     }
   }
 `;
+
+const GET_COUNT_ARTICLE = gql`
+  query getCountArticle($filter: ArticleFilters) {
+    countArticle(filter: $filter)
+  }
+`;
+
+const useQuerySearchParams = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,23 +87,66 @@ const useStyles = makeStyles((theme) => ({
 
 const ListArticle = () => {
   const classes = useStyles();
-
+  let searchQuery = useQuerySearchParams();
+  let searchTitle = searchQuery.get('searchTitle');
+  let pages = parseInt(searchQuery.get('pages'));
+  const [currentPage, setCurrentPage] = useState(pages ? pages : 1);
+  const [countTotal, setCountTotal] = useState(0);
+  const [article, setArticle] = useState();
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
-  const queryLatestArticle = useQuery(GET_LATEST_ARTICLE, {
-    variables: { limit: 3 },
-  });
 
-  if (queryLatestArticle.loading) {
+  const queryCount = searchTitle
+    ? useQuery(GET_COUNT_ARTICLE, {
+        variables: { filter: { title: searchTitle } },
+      })
+    : useQuery(GET_COUNT_ARTICLE);
+
+  const queryArticle = searchTitle
+    ? useQuery(SEARCH_TITLE_ARTICLE, {
+        variables: {
+          limit: 10,
+          start: (currentPage - 1) * 10,
+          filter: { title: searchTitle },
+        },
+        onCompleted: (data) => {
+          setArticle(data.articles);
+        },
+      })
+    : useQuery(GET_LATEST_ARTICLE, {
+        variables: { limit: 10, start: (currentPage - 1) * 10 },
+        onCompleted: (data) => {
+          setArticle(data.articleLatest);
+        },
+      });
+  const handleChange = (event, value) => {
+    window.location.href = searchTitle
+      ? '/list-articles/?searchTitle=' + searchTitle + '&pages=' + value
+      : '/list-articles/?pages=' + value;
+  };
+
+  if (queryArticle.loading || queryCount.loading) {
     return <p>Loading..</p>;
   }
+
   return (
     <div className={classes.root}>
-      {/* <Hero /> */}
       <Section>
-        <PopularNews data={queryLatestArticle.data.articleLatest} />
+        <PopularNews
+          searchTitle={searchTitle ? searchTitle : ''}
+          data={article || []}
+        />
+        <Grid style={{ marginTop: '5rem' }} container justify='flex-end'>
+          <Pagination
+            count={Math.ceil(queryCount.data.countArticle / 10)}
+            disabled={queryCount.data.countArticle > 10 ? false : true}
+            page={currentPage}
+            shape='rounded'
+            onChange={handleChange}
+          />
+        </Grid>
       </Section>
     </div>
   );

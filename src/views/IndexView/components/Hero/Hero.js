@@ -144,7 +144,6 @@ const Hero = ({ themeMode = 'light', className, ...rest }) => {
         variant: 'h2',
         color: 'textPrimary',
       }}
-      // ctaGroup={[docsButton, buyButton]}
       data-aos='fade-right'
       disableGutter
       className={classes.leftSideContent}

@@ -53,9 +53,7 @@ const Form = () => {
   });
 
   const [loginUser, loginResult] = useLazyQuery(LOGIN_USER, {
-    onCompleted: (data) => {
-      console.log(data);
-    },
+    onCompleted: (data) => {},
     onError: (err) => {
       alert('Invalid username or password');
     },
@@ -71,17 +69,13 @@ const Form = () => {
     }));
   }, [formState.values]);
 
-  // React.us
-
   React.useEffect(() => {
     if (loginResult.data) {
       const token = loginResult.data.login.token;
-      console.log(token);
-      // setToken(token);
+
       localStorage.setItem('token', token);
       window.location.replace('/');
     }
-    // console.log(loginResult);
   }, [loginResult.data]);
 
   const handleChange = (event) => {

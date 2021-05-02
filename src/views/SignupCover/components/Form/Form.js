@@ -87,9 +87,7 @@ const Form = () => {
 
   React.useEffect(() => {
     if (result.data) {
-      // console.log(result.data);
       const token = result.data.register;
-      console.log(token);
       localStorage.setItem('token', token);
       window.location.replace('/');
     }
@@ -118,7 +116,6 @@ const Form = () => {
     event.preventDefault();
 
     if (formState.isValid) {
-      // console.log(formState);
       const {
         email,
         password,
@@ -126,7 +123,7 @@ const Form = () => {
         firstName,
         displayName,
       } = formState.values;
-      // console.log(email);
+
       registerUser({
         variables: {
           email,

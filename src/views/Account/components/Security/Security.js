@@ -6,18 +6,13 @@ import {
   Grid,
   Typography,
   TextField,
-  FormControlLabel,
-  Switch,
   Button,
   Divider,
 } from '@material-ui/core';
 import validate from 'validate.js';
 import { gql, useMutation } from '@apollo/client';
-import {
-  userSelector,
-  setUserProfile,
-} from '../../../../features/user/UserSlice';
-import { useSelector, useDispatch } from 'react-redux';
+import { userSelector } from '../../../../features/user/UserSlice';
+import { useSelector } from 'react-redux';
 
 const schema = {
   oldPassword: {
@@ -105,10 +100,6 @@ const Security = (props) => {
     }));
   };
 
-  React.useEffect(() => {
-    console.log(updatePasswordResult.data);
-    // alert('Change password Success');
-  }, [updatePasswordResult.data]);
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -172,9 +163,6 @@ const Security = (props) => {
               <Typography variant='h6' color='textPrimary'>
                 Change Password
               </Typography>
-              <Button variant='outlined' color='primary'>
-                Log out
-              </Button>
             </div>
           </Grid>
           <Grid item xs={12}>

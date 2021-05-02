@@ -8,13 +8,103 @@ import {
   Hero,
   General,
   Security,
-  Notifications,
-  Billing,
   MyArticle,
   FavArticle,
   FavRecipe,
   MyRecipe,
 } from './components';
+
+import { gql, useQuery, useMutation } from '@apollo/client';
+import { userSelector } from '../../features/user/UserSlice';
+import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+
+const MY_RECIPES = gql`
+  query getUserRecipe($userID: ID!, $limit: Int, $start: Int) {
+    myRecipe(userID: $userID, limit: $limit, start: $start) {
+      _id
+      title
+      images {
+        src
+      }
+      author {
+        displayName
+      }
+      issueDate
+    }
+  }
+`;
+const MY_ARTICLES = gql`
+  query getUserArticle($userID: ID!, $limit: Int, $start: Int) {
+    myArticle(userID: $userID, limit: $limit, start: $start) {
+      _id
+      title
+      subtitle
+      issueDate
+      cover {
+        src
+      }
+    }
+  }
+`;
+
+const MY_FAV_ARTICLES = gql`
+  query getUserFavArticle($userID: ID!, $limit: Int, $start: Int) {
+    myFavArticle(userID: $userID, limit: $limit, start: $start) {
+      _id
+      article {
+        _id
+        title
+        subtitle
+        issueDate
+        cover {
+          src
+        }
+      }
+    }
+  }
+`;
+
+const MY_FAV_RECIPES = gql`
+  query getUserFavRecipe($userID: ID!, $limit: Int, $start: Int) {
+    myFavRecipe(userID: $userID, limit: $limit, start: $start) {
+      _id
+      recipe {
+        _id
+        title
+        images {
+          src
+        }
+        author {
+          displayName
+        }
+        issueDate
+      }
+    }
+  }
+`;
+
+const COUNT_MY_ARTICLE = gql`
+  query countMyArticle($userID: ID!) {
+    countMyArticle(userID: $userID)
+  }
+`;
+
+const COUNT_MY_FAVARTICLE = gql`
+  query countMyFavArticle($userID: ID!) {
+    countFavArticle(userID: $userID)
+  }
+`;
+const COUNT_MY_RECIPE = gql`
+  query countMyRecipe($userID: ID!) {
+    countMyRecipe(userID: $userID)
+  }
+`;
+const COUNT_MY_FAVRECIPE = gql`
+  query countMyFavRecipe($userID: ID!) {
+    countFavRecipe(userID: $userID)
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,11 +170,6 @@ const subPages = [
     href: '/account/?pid=security',
     title: 'Security',
   },
-  // {
-  //   id: 'notifications',
-  //   href: '/account/?pid=notifications',
-  //   title: 'Notifications',
-  // },
   {
     id: 'myArticle',
     href: '/account/?pid=myArticle',
@@ -105,12 +190,11 @@ const subPages = [
     href: '/account/?pid=favRecipe',
     title: 'Favorite Recipe',
   },
-  // {
-  //   id: 'billing',
-  //   href: '/account/?pid=billing',
-  //   title: 'Billing Information',
-  // },
 ];
+
+const useQuerySearchParams = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -125,6 +209,50 @@ const TabPanel = (props) => {
 const Account = (props = {}) => {
   const classes = useStyles();
   let pageId = parse(window.location.search).pid || 'general';
+  const userID = useSelector(userSelector)._id;
+  let searchQuery = useQuerySearchParams();
+
+  let currentPage = parseInt(
+    searchQuery.get('pages') ? searchQuery.get('pages') : 1
+  );
+  const queryMyRecipe = useQuery(MY_RECIPES, {
+    variables: { userID, limit: 10, start: (currentPage - 1) * 10 },
+  });
+  const queryMyArticle = useQuery(MY_ARTICLES, {
+    variables: { userID, limit: 10, start: (currentPage - 1) * 10 },
+  });
+  const queryMyFavArticle = useQuery(MY_FAV_ARTICLES, {
+    variables: { userID, limit: 10, start: (currentPage - 1) * 10 },
+  });
+  const queryMyFavRecipe = useQuery(MY_FAV_RECIPES, {
+    variables: { userID, limit: 10, start: (currentPage - 1) * 10 },
+  });
+
+  const countArticle = useQuery(COUNT_MY_ARTICLE, {
+    variables: { userID },
+  });
+  const countRecipe = useQuery(COUNT_MY_RECIPE, {
+    variables: { userID },
+  });
+  const countFavRecipe = useQuery(COUNT_MY_FAVRECIPE, {
+    variables: { userID },
+  });
+  const countFavArticle = useQuery(COUNT_MY_FAVARTICLE, {
+    variables: { userID },
+  });
+
+  if (
+    queryMyArticle.loading ||
+    queryMyFavArticle.loading ||
+    queryMyRecipe.loading ||
+    queryMyFavRecipe.loading ||
+    countFavArticle.loading ||
+    countFavRecipe.loading ||
+    countArticle.loading ||
+    countRecipe.loading
+  ) {
+    return <p>Loading..</p>;
+  }
 
   return (
     <div className={classes.root}>
@@ -166,24 +294,39 @@ const Account = (props = {}) => {
               <TabPanel value={pageId} index={'security'}>
                 <Security />
               </TabPanel>
-              {/* <TabPanel value={pageId} index={'notifications'}>
-                <Notifications />
-              </TabPanel> */}
+
               <TabPanel value={pageId} index={'myArticle'}>
-                <MyArticle />
+                <MyArticle
+                  data={queryMyArticle.data.myArticle}
+                  totalPages={Math.ceil(countArticle.data.countMyArticle / 10)}
+                  currentPage={currentPage}
+                />
               </TabPanel>
               <TabPanel value={pageId} index={'myRecipe'}>
-                <MyRecipe />
+                <MyRecipe
+                  data={queryMyRecipe.data.myRecipe}
+                  totalPages={Math.ceil(countRecipe.data.countMyRecipe / 10)}
+                  currentPage={currentPage}
+                />
               </TabPanel>
               <TabPanel value={pageId} index={'favRecipe'}>
-                <FavRecipe />
+                <FavRecipe
+                  data={queryMyFavRecipe.data.myFavRecipe}
+                  totalPages={Math.ceil(
+                    countFavRecipe.data.countFavRecipe / 10
+                  )}
+                  currentPage={currentPage}
+                />
               </TabPanel>
               <TabPanel value={pageId} index={'favArticle'}>
-                <FavArticle />
+                <FavArticle
+                  data={queryMyFavArticle.data.myFavArticle}
+                  totalPages={Math.ceil(
+                    countFavArticle.data.countFavArticle / 10
+                  )}
+                  currentPage={currentPage}
+                />
               </TabPanel>
-              {/* <TabPanel value={pageId} index={'billing'}>
-                <Billing />
-              </TabPanel> */}
             </CardBase>
           </Grid>
         </Grid>

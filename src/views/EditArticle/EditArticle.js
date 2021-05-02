@@ -23,7 +23,6 @@ const GET_ARTICLE_BY_ID = gql`
         src
       }
       content {
-        textNumber
         text
         images
       }
@@ -112,7 +111,6 @@ const CreateRecipe = (props = {}) => {
     return <p>Loading..</p>;
   }
   const article = queryArticle.data.article;
-  console.log(article);
 
   return (
     <div className={classes.root}>

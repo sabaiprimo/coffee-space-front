@@ -1,11 +1,11 @@
 import React from 'react';
-import clsx from 'clsx';
+
 import { parse } from 'query-string';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, List, ListItem, Grid, Typography } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { SectionAlternate, CardBase } from 'components/organisms';
-import { Hero, MainForm, GeneralInfoForm } from './components';
-import { useSelector, useDispatch } from 'react-redux';
+import { Hero, MainForm } from './components';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
@@ -77,8 +77,6 @@ const TabPanel = (props) => {
 
 const CreateRecipe = (props = {}) => {
   const classes = useStyles();
-  let pageId = parse(window.location.search).pid || 'general';
-
   return (
     <div className={classes.root}>
       <Hero />

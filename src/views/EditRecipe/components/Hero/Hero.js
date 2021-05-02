@@ -28,7 +28,7 @@ const Hero = (props) => {
     <div className={clsx(classes.root, className)} {...rest}>
       <Section>
         <SectionHeader
-          title='Create and Edit Recipe'
+          title='Edit Recipe'
           // subtitle='create and edit new recipe'
           align='left'
           disableGutter

@@ -3,28 +3,12 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useMediaQuery, Grid } from '@material-ui/core';
 import { Section, SectionAlternate } from 'components/organisms';
 import {
-  Archive,
-  FeaturedArticles,
   FooterNewsletter,
-  Hero,
   LatestStories,
-  MostViewedArticles,
   PopularNews,
   SidebarArticles,
-  SidebarNewsletter,
-  Tags,
 } from './components';
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
-
-import {
-  popularNews,
-  featuredArticles,
-  latestStories,
-  sidebarArticles,
-  mostViewedArticles,
-  archive,
-  tags,
-} from './data';
+import { gql, useQuery } from '@apollo/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,12 +35,12 @@ const GET_LATEST_ARTICLE = gql`
       author {
         _id
         displayName
+        pictureProfile
       }
       cover {
         src
       }
       content {
-        textNumber
         text
         images
       }
@@ -66,6 +50,53 @@ const GET_LATEST_ARTICLE = gql`
   }
 `;
 
+const GET_FEATURE_ARTICLE = gql`
+  query getFeatureArticle($limit: Int) {
+    featureArticle(limit: $limit) {
+      _id
+      title
+      subtitle
+      headline
+      author {
+        _id
+        displayName
+      }
+      cover {
+        src
+      }
+      content {
+        text
+        images
+      }
+      issueDate
+      tags
+    }
+  }
+`;
+
+const GET_POPULAR_ARTICLE = gql`
+  query getPopularArticle {
+    popularArticle {
+      _id
+      title
+      subtitle
+      headline
+      author {
+        _id
+        displayName
+      }
+      cover {
+        src
+      }
+      content {
+        text
+        images
+      }
+      issueDate
+      tags
+    }
+  }
+`;
 const BrowseArticles = () => {
   const classes = useStyles();
 
@@ -75,43 +106,39 @@ const BrowseArticles = () => {
   });
 
   const queryLatestArticle = useQuery(GET_LATEST_ARTICLE, {
-    variables: { limit: 3 },
+    variables: { limit: 6 },
   });
 
-  if (queryLatestArticle.loading) {
+  const queryFeatureArticle = useQuery(GET_FEATURE_ARTICLE, {
+    variables: { limit: 4 },
+  });
+
+  const queryPopular = useQuery(GET_POPULAR_ARTICLE);
+
+  if (
+    queryLatestArticle.loading ||
+    queryFeatureArticle.loading ||
+    queryPopular.loading
+  ) {
     return <p>Loading..</p>;
   }
 
   return (
     <div className={classes.root}>
-      {/* <Hero /> */}
       <Section>
-        <PopularNews data={popularNews} />
+        <PopularNews data={queryPopular.data.popularArticle} />
       </Section>
-      {/* <SectionAlternate>
-        <FeaturedArticles data={featuredArticles} />
-      </SectionAlternate> */}
       <Section>
         <Grid container spacing={isMd ? 4 : 2}>
           <Grid item xs={12} md={8}>
             <LatestStories data={queryLatestArticle.data.articleLatest} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <SidebarArticles data={sidebarArticles} />
+            <SidebarArticles data={queryFeatureArticle.data.featureArticle} />
           </Grid>
         </Grid>
       </Section>
 
-      {/* <Section>
-        <Grid container spacing={isMd ? 4 : 2}>
-          <Grid item xs={12} md={8}>
-            <Archive data={archive} />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Tags data={tags} />
-          </Grid>
-        </Grid>
-      </Section> */}
       <SectionAlternate className={classes.footerNewsletterSection}>
         <FooterNewsletter />
       </SectionAlternate>

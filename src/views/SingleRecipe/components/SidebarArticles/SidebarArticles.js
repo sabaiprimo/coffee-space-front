@@ -133,25 +133,27 @@ const SidebarArticles = (props) => {
           <Grid
             item
             xs={12}
-            key={index}
             data-aos='fade-up'
+            key={index}
             className={classes.gridItem}
           >
-            <CardProduct
-              className={classes.cardProduct}
-              mediaContent={
-                <BlogMediaContent {...item.cover} alt={item.title} />
-              }
-              cardContent={
-                <BlogContent
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  author={item.author}
-                  date={item.issueDate}
-                  tags={item.tags}
-                />
-              }
-            />
+            <a href={'/single-article/' + item._id}>
+              <CardProduct
+                className={classes.cardProduct}
+                mediaContent={
+                  <BlogMediaContent {...item.cover} alt={item.title} />
+                }
+                cardContent={
+                  <BlogContent
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    author={item.author}
+                    date={item.issueDate}
+                    tags={item.tags}
+                  />
+                }
+              />
+            </a>
           </Grid>
         ))}
       </Grid>

@@ -22,6 +22,17 @@ import icon3 from '../../../../assets/icons/coffee-recipe-gen/hot-cup.svg';
 import icon4 from '../../../../assets/icons/coffee-recipe-gen/cooking.svg';
 import icon5 from '../../../../assets/icons/coffee-recipe-gen/sack.svg';
 import { Link } from 'react-router-dom';
+import { gql, useMutation, useQuery } from '@apollo/client';
+
+const GET_RATING_RECIPE = gql`
+  query getRating($recipeID: ID!) {
+    avgRatingRecipe(recipeID: $recipeID) {
+      _id
+      avgRate
+      reviews
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   cardProduct: {
@@ -37,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
   },
   image: {
     objectFit: 'cover',
+  },
+  courseCardReviewStar: {
+    color: colors.yellow[800],
+    marginRight: theme.spacing(1 / 2),
   },
   blogTitle: {
     fontWeight: 700,
@@ -78,6 +93,196 @@ const SimilarStories = (props) => {
       lazyProps={{ width: '100%', height: '100%' }}
     />
   );
+
+  const EachRecipe = (props) => {
+    const { item } = props;
+    const getAvgRate = useQuery(GET_RATING_RECIPE, {
+      variables: { recipeID: item._id },
+    });
+    if (getAvgRate.loading) {
+      return <p>Loading...</p>;
+    }
+    // const classes = useStyles()
+    return (
+      <Grid item xs={12} sm={12} md={4} data-aos='fade-up'>
+        <CardProduct
+          className={classes.cardProduct}
+          withShadow
+          liftUp
+          mediaContent={
+            <>
+              <Image
+                {...item.images[0]}
+                alt={item.title}
+                lazyProps={{ width: '100%', height: '100%' }}
+                className={classes.image}
+              />
+            </>
+          }
+          cardContent={
+            <Grid container spacing={1}>
+              <div
+                style={{
+                  color: 'black',
+                  // backgroundColor: 'DodgerBlue',
+                  padding: '10px',
+                  fontFamily: 'Arial',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <img
+                  style={{
+                    maxWidth: '10%',
+                  }}
+                  src={icon1}
+                  alt='Facebook'
+                />
+                <p className={classes.generalInfo}>
+                  {item.preparationTime} mins
+                </p>
+
+                <img
+                  style={{
+                    maxWidth: '10%',
+                  }}
+                  src={icon2}
+                  alt='Facebook'
+                />
+                <p className={classes.generalInfo}>{item.totalTime} mins</p>
+
+                <img
+                  style={{
+                    maxWidth: '10%',
+                  }}
+                  src={icon3}
+                  alt='Facebook'
+                />
+                <p className={classes.generalInfo}>{item.serving} cup</p>
+
+                <img
+                  style={{
+                    maxWidth: '10%',
+                  }}
+                  src={icon4}
+                  alt='Facebook'
+                />
+                <p className={classes.generalInfo}>{item.level}</p>
+
+                <img
+                  style={{
+                    maxWidth: '10%',
+                  }}
+                  src={icon5}
+                  alt='Facebook'
+                />
+                <p className={classes.generalInfo}>{item.roastLevel}</p>
+              </div>
+
+              <Grid item xs={12}>
+                <Typography
+                  variant='h6'
+                  color='textPrimary'
+                  align='left'
+                  className={classes.fontWeight700}
+                >
+                  {item.title}
+                </Typography>
+              </Grid>
+              <Grid item container justify='flex-start' xs={12} xs={12}>
+                <Grid
+                  item
+                  container
+                  alignItems='center'
+                  // justify='flex-end'
+                  xs={2}
+                >
+                  <Avatar
+                    className={classes.courseCardReviewAvatar}
+                    // alt={review.authorName}
+                    src={item.author.pictureProfile}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  container
+                  alignItems='center'
+                  // justify='flex-end'
+                  xs={6}
+                >
+                  <Typography
+                    variant='body1'
+                    color='textSecondary'
+
+                    // align='left'
+                  >
+                    {item.author.displayName}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  container
+                  alignItems='center'
+                  justify='flex-end'
+                  xs={4}
+                >
+                  <NoSsr>
+                    <i
+                      className={clsx(
+                        'fas fa-star',
+                        classes.courseCardReviewStar
+                      )}
+                    />
+                  </NoSsr>
+                  <Typography
+                    component='span'
+                    variant='body1'
+                    className={classes.fontWeight700}
+                  >
+                    {getAvgRate.data.avgRatingRecipe
+                      ? getAvgRate.data.avgRatingRecipe.avgRate
+                      : ''}{' '}
+                  </Typography>
+                  <Typography
+                    noWrap
+                    component='span'
+                    variant='body2'
+                    color='textSecondary'
+                    className={classes.reviewCount}
+                  >
+                    (
+                    {getAvgRate.data.avgRatingRecipe
+                      ? getAvgRate.data.avgRatingRecipe.reviews
+                      : 0}{' '}
+                    {getAvgRate.data.avgRatingRecipe
+                      ? getAvgRate.data.avgRatingRecipe.reviews > 1
+                        ? 'reviews'
+                        : 'review'
+                      : 'review'}
+                    )
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid item container justify='space-between' xs={12}>
+                <Grid item container xs={6} wrap='nowrap'></Grid>
+              </Grid>
+
+              <Grid item xs={12}>
+                <LearnMoreLink
+                  href={'/single-recipe/' + item._id}
+                  title='Learn more'
+                  variant='body1'
+                  color='primary'
+                />
+              </Grid>
+            </Grid>
+          }
+        />
+      </Grid>
+    );
+  };
 
   const BlogContent = (props) => (
     <div>
@@ -136,173 +341,7 @@ const SimilarStories = (props) => {
       />
       <Grid container spacing={2}>
         {data.map((item, index) => (
-          <Grid key={index} item xs={12} sm={12} md={4} data-aos='fade-up'>
-            <CardProduct
-              className={classes.cardProduct}
-              withShadow
-              liftUp
-              mediaContent={
-                <>
-                  <Image
-                    {...item.images[0]}
-                    alt={item.title}
-                    lazyProps={{ width: '100%', height: '100%' }}
-                    className={classes.image}
-                  />
-                </>
-              }
-              cardContent={
-                <Grid container spacing={1}>
-                  <div
-                    style={{
-                      color: 'black',
-                      // backgroundColor: 'DodgerBlue',
-                      padding: '10px',
-                      fontFamily: 'Arial',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: '100%',
-                    }}
-                  >
-                    <img
-                      style={{
-                        maxWidth: '10%',
-                      }}
-                      src={icon1}
-                      alt='Facebook'
-                    />
-                    <p className={classes.generalInfo}>
-                      {item.preparationTime} mins
-                    </p>
-
-                    <img
-                      style={{
-                        maxWidth: '10%',
-                      }}
-                      src={icon2}
-                      alt='Facebook'
-                    />
-                    <p className={classes.generalInfo}>{item.totalTime} mins</p>
-
-                    <img
-                      style={{
-                        maxWidth: '10%',
-                      }}
-                      src={icon3}
-                      alt='Facebook'
-                    />
-                    <p className={classes.generalInfo}>{item.serving} cup</p>
-
-                    <img
-                      style={{
-                        maxWidth: '10%',
-                      }}
-                      src={icon4}
-                      alt='Facebook'
-                    />
-                    <p className={classes.generalInfo}>{item.level}</p>
-
-                    <img
-                      style={{
-                        maxWidth: '10%',
-                      }}
-                      src={icon5}
-                      alt='Facebook'
-                    />
-                    <p className={classes.generalInfo}>{item.roastLevel}</p>
-                  </div>
-
-                  <Grid item xs={12}>
-                    <Typography
-                      variant='h6'
-                      color='textPrimary'
-                      align='left'
-                      className={classes.fontWeight700}
-                    >
-                      {item.title}
-                    </Typography>
-                  </Grid>
-                  <Grid item container justify='flex-start' xs={12} xs={12}>
-                    <Grid
-                      item
-                      container
-                      alignItems='center'
-                      // justify='flex-end'
-                      xs={2}
-                    >
-                      <Avatar
-                        key={index}
-                        className={classes.courseCardReviewAvatar}
-                        // alt={review.authorName}
-                        src={item.author.pictureProfile}
-                      />
-                    </Grid>
-                    <Grid
-                      item
-                      container
-                      alignItems='center'
-                      // justify='flex-end'
-                      xs={6}
-                    >
-                      <Typography
-                        variant='body1'
-                        color='textSecondary'
-
-                        // align='left'
-                      >
-                        {item.author.displayName}
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      container
-                      alignItems='center'
-                      justify='flex-end'
-                      xs={4}
-                    >
-                      <NoSsr>
-                        <i
-                          className={clsx(
-                            'fas fa-star',
-                            classes.courseCardReviewStar
-                          )}
-                        />
-                      </NoSsr>
-                      <Typography
-                        component='span'
-                        variant='body1'
-                        className={classes.fontWeight700}
-                      >
-                        5
-                      </Typography>
-                      <Typography
-                        noWrap
-                        component='span'
-                        variant='body2'
-                        color='textSecondary'
-                        className={classes.reviewCount}
-                      >
-                        (12 reviews)
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid item container justify='space-between' xs={12}>
-                    <Grid item container xs={6} wrap='nowrap'></Grid>
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <LearnMoreLink
-                      href={'/single-recipe/' + item._id}
-                      title='Learn more'
-                      variant='body1'
-                      color='primary'
-                    />
-                  </Grid>
-                </Grid>
-              }
-            />
-          </Grid>
+          <EachRecipe key={index} item={item} />
         ))}
       </Grid>
     </div>

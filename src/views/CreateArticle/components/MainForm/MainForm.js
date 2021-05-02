@@ -8,16 +8,14 @@ import {
   TextField,
   Button,
   Divider,
-  NativeSelect,
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
-import { gql, useQuery, useMutation } from '@apollo/client';
-import { useSelector, useDispatch } from 'react-redux';
+import { gql, useMutation } from '@apollo/client';
+import { useSelector } from 'react-redux';
 import { userSelector } from '../../../../features/user/UserSlice';
 
 import { upload } from '../../../../helpers/utils';
 import validate from 'validate.js';
-import { DirectionsWalkRounded, ImageSearch } from '@material-ui/icons';
 
 const schema = {
   title: {
@@ -29,8 +27,6 @@ const schema = {
   headline: {
     presence: { allowEmpty: false, message: 'is required' },
   },
-
-  // images: { allowEmpty: false, message: 'is required' },
 };
 
 const CREATE_ARTICLE = gql`
@@ -118,13 +114,6 @@ const MainForm = (props) => {
   const hasError = (field) =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
-  // React.useEffect(() => {
-  //   let isMounted = true; // note this flag denote mount status
-  //   return () => {
-  //     isMounted = false;
-  //   }; // use effect cleanup to set flag false, if unmounted
-  // });
-
   React.useEffect(() => {
     async function checkErrorAndUpdateState() {
       const errors = await validate(formState.values, schema);
@@ -171,7 +160,6 @@ const MainForm = (props) => {
     let tempChange = tempContents[idx];
     tempChange = {
       ...tempChange,
-      textNumber: idx + 1,
       text: value,
     };
     tempContents[idx] = tempChange;
@@ -322,20 +310,19 @@ const MainForm = (props) => {
     }
     if (formState.isValid && filesObj.file.length > 0) {
       const file = Array.from(filesObj.file);
-      // console.log(files);
+
       let coverImageLink = '';
-      // const uploadPromises =
+
       let uploadImage = await upload(0, file[0]);
       coverImageLink = {
         src: uploadImage.data.fileLocation,
       };
-      console.log(coverImageLink);
-      // uplaod image -> content
+
       let contents = [];
       for (const content of contentForm) {
         let tempContent = { ...content };
         let tempImageLink = [];
-        console.log(content);
+
         if (tempContent.images) {
           if (tempContent.images.files.length > 0) {
             for (const file of tempContent.images.files) {
@@ -356,7 +343,6 @@ const MainForm = (props) => {
       const author = userProfile._id;
       let issueDate = new Date().toISOString();
       const sentContent = contents;
-      console.log('sentContent: ', sentContent);
 
       createArticle({
         variables: {
@@ -372,18 +358,10 @@ const MainForm = (props) => {
       })
         .then(() => {
           alert('Create new article complete');
-          // setFormState({
-          //   isValid: false,
-          //   values: {},
-          //   touched: {},
-          //   errors: {},
-          // });
-
-          // window.location.reload();
+          window.location.reload();
         })
         .catch((error) => {
           alert(error);
-          // window.location.reload();
         });
     }
 
@@ -516,10 +494,8 @@ const MainForm = (props) => {
                 {isNeedCont ? (
                   <Grid item xs={12}>
                     <Button
-                      // variant='outlined'
                       className={classes.addStepButton}
                       onClick={handleClickImage}
-                      // onChange={({ target }) => setDirection(target.value)}
                     >
                       Add Images
                     </Button>
@@ -530,10 +506,8 @@ const MainForm = (props) => {
 
                 <Grid item xs={12}>
                   <Button
-                    // variant='outlined'
                     className={classes.addStepButton}
                     onClick={handleClickContent}
-                    // onChange={({ target }) => setDirection(target.value)}
                   >
                     Add Content
                   </Button>
@@ -560,10 +534,8 @@ const MainForm = (props) => {
               </Grid>
 
               <Button
-                // variant='outlined'
                 className={classes.addStepButton}
                 onClick={() => setTagNo(tagNo + 1)}
-                // onChange={({ target }) => setDirection(target.value)}
               >
                 Add TAG
               </Button>
@@ -576,7 +548,6 @@ const MainForm = (props) => {
               type='submit'
               color='primary'
               size='large'
-              // onClick={uploadFiles}
             >
               Publish
             </Button>

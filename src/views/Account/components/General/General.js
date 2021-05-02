@@ -110,7 +110,7 @@ const General = (props) => {
 
   React.useEffect(() => {
     if (result.data) {
-      console.log(result.data);
+      alert('Update Complete');
     }
   }, [result.data]);
 
@@ -141,7 +141,9 @@ const General = (props) => {
       const updateDisplayName = formState.values.displayName;
       const updateFirstName = formState.values.firstName;
       const updateLastName = formState.values.lastName;
-      const updatePictureProfile = tempUploadProfile;
+      const updatePictureProfile = tempUploadProfile
+        ? tempUploadProfile
+        : pictureProfile;
       console.log(userID);
       console.log(updatePictureProfile);
       updateUserProfile({
@@ -153,8 +155,6 @@ const General = (props) => {
           updatePictureProfile,
         },
       });
-
-      // window.location.replace('/');
     }
 
     setFormState((formState) => ({

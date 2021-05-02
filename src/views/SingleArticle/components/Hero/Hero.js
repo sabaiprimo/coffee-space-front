@@ -11,8 +11,8 @@ import {
 } from '@material-ui/core';
 import { SectionHeader } from 'components/molecules';
 import { Section, Parallax } from 'components/organisms';
-
-const useStyles = makeStyles(theme => ({
+import moment from 'moment';
+const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     height: '100%',
@@ -47,8 +47,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Hero = props => {
-  const { className, cover, title, subtitle, author, ...rest } = props;
+const Hero = (props) => {
+  const {
+    issueDate,
+    className,
+    cover,
+    title,
+    subtitle,
+    author,
+    ...rest
+  } = props;
   const classes = useStyles();
   return (
     <div className={clsx(classes.root, className)} {...rest}>
@@ -56,42 +64,42 @@ const Hero = props => {
         <div className={classes.sectionWrapper}>
           <Section className={classes.section}>
             <>
-            <SectionHeader
-              title={title}
-              subtitle={subtitle}
-              align="left"
-              data-aos="fade-up"
-              titleProps={{
-                className: clsx(classes.title, classes.textWhite),
-                variant: 'h3',
-              }}
-              subtitleProps={{
-                className: classes.textWhite,
-              }}
-            />
-            <List disablePadding>
-              <ListItem disableGutters>
-                <ListItemAvatar className={classes.listItemAvatar}>
-                  <Avatar
-                    {...author.photo}
-                    alt={author.name}
-                    className={classes.avatar}
+              <SectionHeader
+                title={title}
+                subtitle={subtitle}
+                align='left'
+                data-aos='fade-up'
+                titleProps={{
+                  className: clsx(classes.title, classes.textWhite),
+                  variant: 'h3',
+                }}
+                subtitleProps={{
+                  className: classes.textWhite,
+                }}
+              />
+              <List disablePadding>
+                <ListItem disableGutters>
+                  <ListItemAvatar className={classes.listItemAvatar}>
+                    <Avatar
+                      src={author.pictureProfile}
+                      alt={author.displayName}
+                      className={classes.avatar}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`Published by ${author.displayName}`}
+                    secondary={`on ${moment(issueDate).format('Do MMM YYYY')}`}
+                    primaryTypographyProps={{
+                      className: classes.textWhite,
+                      variant: 'subtitle1',
+                    }}
+                    secondaryTypographyProps={{
+                      className: classes.textWhite,
+                      variant: 'subtitle1',
+                    }}
                   />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={`Published by ${author.name}`}
-                  secondary={`on ${author.date}`}
-                  primaryTypographyProps={{
-                    className: classes.textWhite,
-                    variant: 'subtitle1',
-                  }}
-                  secondaryTypographyProps={{
-                    className: classes.textWhite,
-                    variant: 'subtitle1',
-                  }}
-                />
-              </ListItem>
-            </List>
+                </ListItem>
+              </List>
             </>
           </Section>
         </div>

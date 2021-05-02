@@ -1,10 +1,5 @@
-/**
- * Caution: Consider this file when using react-scripts
- *
- * You may delete this file and its occurrences from the project filesystem if you are using GatsbyJS or NextJS version
- */
 import React from 'react';
-import { Switch, Route, Redirect, useParams } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import WithLayout from 'WithLayout';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
@@ -48,12 +43,6 @@ const Routes = () => {
   if (data) {
     dispatch(setUserProfile(data));
   }
-  console.log(data);
-  // useEffect(() => {
-  //   dispatch(fetchUserBytoken({ token: localStorage.getItem('token') }));
-  // }, []);
-
-  // const { username, email } = useSelector(userSelector);
 
   return (
     <Switch>

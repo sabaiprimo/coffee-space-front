@@ -128,7 +128,7 @@ const MainForm = (props) => {
   const [contentForm, setContentForm] = useState(initContentForm);
   const initIsNeedCont =
     data.content[data.content.length - 1].images.length > 0 ? false : true;
-  // console.log('initIsNeedCont: ', initIsNeedCont);
+
   const [isNeedCont, setIsNeedCont] = useState(initIsNeedCont);
   const [tagForm, setTagForm] = useState(data.tags);
   const [tagNo, setTagNo] = useState(data.tags.length);
@@ -271,7 +271,6 @@ const MainForm = (props) => {
     let tempChange = tempContents[idx];
     tempChange = {
       ...tempChange,
-      textNumber: idx + 1,
       text: value,
     };
     tempContents[idx] = tempChange;
@@ -343,24 +342,26 @@ const MainForm = (props) => {
     setContentRender(tempContent);
   };
   // Cannot complete due to behavior of dropzone area
+  // let tempRender = { ...contentRender };
+  // let tempToRender = [...tempRender.contentToRender];
+  // let tempFormState = { ...formState };
+  // let tempContentForm = [...tempFormState.values.content];
+  // let tempImageList = [...imageContentShow];
   // const handleDeleteContent = (key) => {
-  //   let tempRender = { ...contentRender };
-  //   let tempToRender = [...tempRender.contentToRender];
-  //   console.log('before: ', tempRender);
+  //   // console.log('before: ', tempRender);
   //   tempToRender.splice(key, 1);
   //   tempRender.lastStep = tempRender.lastStep - 1;
   //   tempRender.contentToRender = tempToRender;
-  //   console.log('After: ', tempRender);
-  //   let tempFormState = { ...formState };
-  //   let tempContentForm = [...tempFormState.values.content];
-  //   console.log('tempContentForm: ', tempContentForm);
+  //   // console.log('After: ', tempRender);
+
+  //   // console.log('tempContentForm: ', tempContentForm);
   //   tempContentForm.splice(key, 1);
-  //   console.log('tempContentFormAfter: ', tempContentForm);
+  //   // console.log('tempContentFormAfter: ', tempContentForm);
   //   tempFormState.values.content = tempContentForm;
-  //   let tempImageList = [...imageContentShow];
+
   //   tempImageList.splice(key, 1);
   //   // formState.values.content[k];
-  //   console.log('After showlist: ', tempImageList);
+  //   // console.log('After showlist: ', tempImageList);
   //   setContentRender(tempRender);
   //   setFormState(tempFormState);
   //   setContentForm(tempContentForm);
@@ -408,7 +409,7 @@ const MainForm = (props) => {
               <Grid item>
                 <p className={classes.fontWeight600}>Content {k + 1}</p>
               </Grid>
-              {/* <Grid item>
+              <Grid item>
                 <IconButton
                   onClick={(e) => handleDeleteContent(k)}
                   edge='end'
@@ -416,7 +417,7 @@ const MainForm = (props) => {
                 >
                   <DeleteIcon />
                 </IconButton>
-              </Grid> */}
+              </Grid>
             </Grid>
 
             <TextField
@@ -460,7 +461,6 @@ const MainForm = (props) => {
                         : true
                       : true
                   }
-                  initialFiles={formState.values.content[k].images}
                 />
               </div>
             </div>
@@ -479,7 +479,7 @@ const MainForm = (props) => {
     }
     if (formState.isValid && (filesObj.file.length > 0 || covImgShow)) {
       const file = Array.from(filesObj.file);
-      // console.log(files);
+
       let coverImageLink = '';
       if (filesObj.file.length > 0) {
         let uploadImage = await upload(0, file[0]);
@@ -492,9 +492,6 @@ const MainForm = (props) => {
         };
       }
 
-      console.log('coverImageLink: ', coverImageLink);
-      console.log('contentForm: ', contentForm);
-      console.log('old image files: ', imageContentShow);
       // uplaod image -> content
       let contents = [];
       let idxContent = 0;
@@ -506,7 +503,6 @@ const MainForm = (props) => {
         if (tempContent.images) {
           if (tempContent.images.length > 0) {
             for (const file of tempContent.images) {
-              console.log('file to upload:', file);
               let uploadImage = await upload(0, file);
               await tempImageLink.push(uploadImage.data.fileLocation);
             }
@@ -522,10 +518,10 @@ const MainForm = (props) => {
       const headline = formState.values.headline;
       const coverImage = coverImageLink;
       const tags = formState.values.tags;
-      console.log('tags: ', tags);
+
       let issueDate = new Date().toISOString();
       const sentContent = contents;
-      console.log('sentContent: ', sentContent);
+
       updateArticle({
         variables: {
           _id: data._id,
@@ -540,12 +536,6 @@ const MainForm = (props) => {
       })
         .then(() => {
           alert('Update article complete');
-          // setFormState({
-          //   isValid: false,
-          //   values: {},
-          //   touched: {},
-          //   errors: {},
-          // });
 
           window.location.reload();
         })
@@ -566,7 +556,7 @@ const MainForm = (props) => {
 
   return (
     <div className={className} {...rest}>
-      <form name='create-recipe-form' method='post' onSubmit={handleSubmit}>
+      <form name='edit-article-form' method='post' onSubmit={handleSubmit}>
         <Grid container spacing={isMd ? 4 : 2}>
           <Grid item xs={12}>
             <Typography variant='h6' color='textPrimary'>
@@ -714,10 +704,8 @@ const MainForm = (props) => {
                 {isNeedCont ? (
                   <Grid item xs={12}>
                     <Button
-                      // variant='outlined'
                       className={classes.addStepButton}
                       onClick={handleClickImage}
-                      // onChange={({ target }) => setDirection(target.value)}
                     >
                       Add Images
                     </Button>
@@ -728,10 +716,8 @@ const MainForm = (props) => {
 
                 <Grid item xs={12}>
                   <Button
-                    // variant='outlined'
                     className={classes.addStepButton}
                     onClick={handleClickContent}
-                    // onChange={({ target }) => setDirection(target.value)}
                   >
                     Add Content
                   </Button>
@@ -758,10 +744,8 @@ const MainForm = (props) => {
               </Grid>
 
               <Button
-                // variant='outlined'
                 className={classes.addStepButton}
                 onClick={() => setTagNo(tagNo + 1)}
-                // onChange={({ target }) => setDirection(target.value)}
               >
                 Add TAG
               </Button>
@@ -774,7 +758,6 @@ const MainForm = (props) => {
               type='submit'
               color='primary'
               size='large'
-              // onClick={uploadFiles}
             >
               Complete and Publish
             </Button>

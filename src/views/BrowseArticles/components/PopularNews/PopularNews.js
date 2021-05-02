@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -16,7 +16,7 @@ import { Icon, Image } from 'components/atoms';
 
 import { SectionHeader } from 'components/molecules';
 import { CardProduct } from 'components/organisms';
-
+import moment from 'moment';
 const useStyles = makeStyles((theme) => ({
   cardProduct: {
     display: 'flex',
@@ -131,12 +131,27 @@ const PopularNews = (props) => {
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
+  const [tempSearchTitle, setTempSearchTitle] = useState();
 
+  const handleChange = (event) => {
+    event.persist();
+    setTempSearchTitle(event.target.value);
+    // dispatch(setSearchTitle(data));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (tempSearchTitle) {
+      window.location.href = '/list-articles?searchTitle=' + tempSearchTitle;
+    } else {
+      window.location.href = '/list-articles';
+    }
+  };
   const BlogMediaContent = (props) => (
     <Image
       {...props}
       className={classes.image}
-      lazyProps={{ width: '100%', height: '100%' }}
+      lazyProps={{ width: '100%', height: '300px' }}
     />
   );
 
@@ -162,7 +177,8 @@ const PopularNews = (props) => {
         className={classes.author}
       >
         <i>
-          {props.author.name} - {props.date}
+          {props.author.displayName} -{' '}
+          {moment(props.date).format('Do MMM YYYY')}
         </i>
       </Typography>
       <Typography variant='subtitle1' color='textPrimary'>
@@ -173,7 +189,7 @@ const PopularNews = (props) => {
         color='primary'
         size='large'
         className={classes.button}
-        href='/single-article'
+        href={'/single-article/' + props._id}
       >
         Read more
       </Button>
@@ -182,32 +198,37 @@ const PopularNews = (props) => {
 
   return (
     <div className={className} {...rest}>
-      <div className={classes.searchInputContainer} data-aos='fade-up'>
-        <FormControl fullWidth variant='outlined'>
-          <OutlinedInput
-            startAdornment={
-              <InputAdornment position='start'>
-                <Icon
-                  fontIconClass='fas fa-search'
-                  fontIconColor={colors.blueGrey[900]}
-                />
-              </InputAdornment>
-            }
-            placeholder='Search for the article'
-          />
-        </FormControl>
-        <Button
-          color='primary'
-          variant='contained'
-          size='large'
-          className={classes.searchButton}
-        >
-          Search
-        </Button>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <div className={classes.searchInputContainer} data-aos='fade-up'>
+          <FormControl fullWidth variant='outlined'>
+            <OutlinedInput
+              startAdornment={
+                <InputAdornment position='start'>
+                  <Icon
+                    fontIconClass='fas fa-search'
+                    fontIconColor={colors.blueGrey[900]}
+                  />
+                </InputAdornment>
+              }
+              onChange={handleChange}
+              placeholder='Search for the article'
+            />
+          </FormControl>
+          <Button
+            color='primary'
+            variant='contained'
+            size='large'
+            className={classes.searchButton}
+            type='submit'
+          >
+            Search
+          </Button>
+        </div>
+      </form>
+
       <SectionHeader
-        title='The most popular news'
-        subtitle="Keep track of what's happening with your data, change permissions, and run reports against your data anywhere in the world. Keep track of what's happening with your data, change permissions."
+        title='The most popular articles'
+        subtitle='Popular articles which people love most.'
         subtitleProps={{
           color: 'textPrimary',
         }}
@@ -229,8 +250,9 @@ const PopularNews = (props) => {
                   title={item.title}
                   subtitle={item.subtitle}
                   author={item.author}
-                  date={item.date}
+                  date={item.issueDate}
                   tags={item.tags}
+                  _id={item._id}
                 />
               }
             />

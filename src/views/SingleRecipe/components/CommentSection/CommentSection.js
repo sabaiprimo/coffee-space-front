@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Divider,
@@ -8,10 +7,12 @@ import {
   Paper,
   TextField,
   Button,
+  IconButton,
 } from '@material-ui/core';
 import { gql, useMutation } from '@apollo/client';
 import { userSelector } from '../../../../features/user/UserSlice';
 import { useSelector } from 'react-redux';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import moment from 'moment';
 const REPLY_COMMENT = gql`
@@ -22,7 +23,13 @@ const REPLY_COMMENT = gql`
   }
 `;
 
-// import './styles.css';
+const DELETE_COMMENT = gql`
+  mutation deleteComment($commentID: ID!) {
+    deleteComment(commentID: $commentID) {
+      _id
+    }
+  }
+`;
 
 const useStyles = makeStyles(() => ({
   textWhite: {
@@ -55,15 +62,12 @@ const useStyles = makeStyles(() => ({
   image: {
     maxWidth: 400,
   },
-  commnetForm: {
+  commentForm: {
     width: '100%',
     display: 'block',
     marginBottom: '1rem',
   },
 }));
-
-const imgLink =
-  'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260';
 
 const CommentSection = (props) => {
   const classes = useStyles();
@@ -72,12 +76,18 @@ const CommentSection = (props) => {
   const recipeID = props.recipeid;
   const { comments } = props;
   const commentsLength = comments.length;
-
   const [replyComment, resultCommentMutation] = useMutation(REPLY_COMMENT);
 
   const handleChange = (event) => {
     event.persist();
     setCommentForm(event.target.value);
+  };
+  const [deleteComment, resultDeleteMutation] = useMutation(DELETE_COMMENT);
+
+  const handleDeleteComment = (e, commentID) => {
+    deleteComment({ variables: { commentID } }).then(() => {
+      window.location.reload();
+    });
   };
 
   React.useEffect(() => {
@@ -121,7 +131,19 @@ const CommentSection = (props) => {
                     posted {moment(value.commentDate).fromNow()}
                   </p>
                 </Grid>
+                {value.userID._id === userID ? (
+                  <IconButton
+                    onClick={(e) => handleDeleteComment(e, value._id)}
+                    edge='end'
+                    aria-label='delete'
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                ) : (
+                  ''
+                )}
               </Grid>
+
               {idx < commentsLength - 1 ? (
                 <Divider variant='fullWidth' style={{ margin: '30px 0' }} />
               ) : (
@@ -134,24 +156,26 @@ const CommentSection = (props) => {
       <br></br>
       <Divider></Divider>
       <br></br>
-      <form onSubmit={handleSubmit}>
-        <div className={classes.commnetForm}>
-          <TextField
-            id='outlined-multiline-static'
-            label='Add commnet'
-            fullWidth
-            multiline
-            rows={4}
-            onChange={handleChange}
-            //   defaultValue='Default Value'
-            //   variant='outlined'
-          />
-        </div>
+      {userID ? (
+        <form onSubmit={handleSubmit}>
+          <div className={classes.commentForm}>
+            <TextField
+              id='outlined-multiline-static'
+              label='Add comment'
+              fullWidth
+              multiline
+              rows={4}
+              onChange={handleChange}
+            />
+          </div>
 
-        <Button variant='contained' color='primary' type='submit'>
-          Reply
-        </Button>
-      </form>
+          <Button variant='contained' color='primary' type='submit'>
+            Reply
+          </Button>
+        </form>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

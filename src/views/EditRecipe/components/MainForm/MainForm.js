@@ -16,13 +16,12 @@ import {
 } from '@material-ui/core';
 
 import { DropzoneArea } from 'material-ui-dropzone';
-import { gql, useQuery, useMutation } from '@apollo/client';
-import { useSelector, useDispatch } from 'react-redux';
+import { gql, useMutation } from '@apollo/client';
+import { useSelector } from 'react-redux';
 import { userSelector } from '../../../../features/user/UserSlice';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { upload } from '../../../../helpers/utils';
 import validate from 'validate.js';
-import { ImageSearch } from '@material-ui/icons';
 
 const schema = {
   title: {
@@ -57,8 +56,6 @@ const schema = {
   directions: {
     presence: { allowEmpty: false, message: 'is required' },
   },
-
-  // images: { allowEmpty: false, message: 'is required' },
 };
 
 const UPDATE_RECIPE = gql`
@@ -121,7 +118,6 @@ const useStyles = makeStyles((theme) => ({
     background: '#f7f5ee',
   },
   form: {
-    // width: '100%',
     '& .MuiTextField-root': {
       background: theme.palette.background.paper,
     },
@@ -143,7 +139,6 @@ const useStyles = makeStyles((theme) => ({
 
 const MainForm = (props) => {
   const { data, className, ...rest } = props;
-  console.log(data);
   const classes = useStyles();
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
@@ -156,7 +151,6 @@ const MainForm = (props) => {
   });
   const [imageShow, setImageShow] = useState(initFiles);
 
-  console.log('init', initFiles);
   const [updateRecipe, resultRecipe] = useMutation(UPDATE_RECIPE);
 
   const [directionsForm, setDirections] = useState(data.directions);
@@ -368,7 +362,6 @@ const MainForm = (props) => {
   let imageShowList = [];
 
   for (let l = 0; l < imageShow.length; l++) {
-    console.log('src: ', imageShow[l]);
     imageShowList.push(
       <GridListTile className={classes.gridListTile} key={l}>
         <img src={imageShow[l]} />
@@ -390,7 +383,6 @@ const MainForm = (props) => {
     );
   }
 
-  console.log(imageShowList);
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (filesObj.files.length == 0) {
@@ -398,7 +390,7 @@ const MainForm = (props) => {
     }
     if (formState.isValid && filesObj.files.length > 0) {
       const files = Array.from(filesObj.files);
-      // console.log(files);
+
       let imageLinks = [];
       if (imageShow.length > 0) {
         imageShow.map((image, i) => {
@@ -416,7 +408,6 @@ const MainForm = (props) => {
             src: uploadImage.data.fileLocation,
             srcSet: uploadImage.data.fileLocation,
           });
-          console.log(imageLinks);
         })
       ).then(() => {
         const _id = data._id;
@@ -432,8 +423,6 @@ const MainForm = (props) => {
         const directions = formState.values.directions;
         let issueDate = new Date().toISOString();
 
-        console.log(directions);
-        console.log(imageLinks);
         updateRecipe({
           variables: {
             _id,
@@ -759,7 +748,6 @@ const MainForm = (props) => {
               </GridList>
               <div className={classes.form}>
                 <DropzoneArea
-                  // initialFiles={initFiles}
                   onChange={(files) => setFiles({ files })}
                   required
                 />
@@ -772,7 +760,6 @@ const MainForm = (props) => {
               type='submit'
               color='primary'
               size='large'
-              // onClick={uploadFiles}
             >
               Create
             </Button>

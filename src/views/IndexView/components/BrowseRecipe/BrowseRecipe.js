@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -77,7 +77,18 @@ const BrowseRecipe = (props) => {
   const { data, className, ...rest } = props;
   const classes = useStyles();
   const theme = useTheme();
+  const [tempSearchTitle, setTempSearchTitle] = useState();
 
+  const handleChange = (event) => {
+    event.persist();
+    setTempSearchTitle(event.target.value);
+    // dispatch(setSearchTitle(data));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    window.location.replace('/browse-recipe?searchTitle=' + tempSearchTitle);
+  };
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Section className={classes.section}>
@@ -92,30 +103,34 @@ const BrowseRecipe = (props) => {
           titleVariant='h3'
           data-aos='fade-up'
         />
-        <div className={classes.searchInputContainer} data-aos='fade-up'>
-          <FormControl fullWidth variant='outlined'>
-            <OutlinedInput
+        <form onSubmit={handleSubmit}>
+          <div className={classes.searchInputContainer} data-aos='fade-up'>
+            <FormControl fullWidth variant='outlined'>
+              <OutlinedInput
+                size='large'
+                startAdornment={
+                  <InputAdornment position='start'>
+                    <Icon
+                      fontIconClass='fas fa-search'
+                      fontIconColor={theme.palette.primary.dark}
+                    />
+                  </InputAdornment>
+                }
+                onChange={handleChange}
+                placeholder='Search for the recipe'
+              />
+            </FormControl>
+            <Button
+              color='primary'
+              variant='contained'
               size='large'
-              startAdornment={
-                <InputAdornment position='start'>
-                  <Icon
-                    fontIconClass='fas fa-search'
-                    fontIconColor={theme.palette.primary.dark}
-                  />
-                </InputAdornment>
-              }
-              placeholder='Search for the recipe'
-            />
-          </FormControl>
-          <Button
-            color='primary'
-            variant='contained'
-            size='large'
-            className={classes.searchButton}
-          >
-            Search
-          </Button>
-        </div>
+              type='submit'
+              className={classes.searchButton}
+            >
+              Search
+            </Button>
+          </div>
+        </form>
       </Section>
     </div>
   );

@@ -5,7 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { colors, Typography, Grid } from '@material-ui/core';
 import { Image } from 'components/atoms';
 import { CardProduct } from 'components/organisms';
-
+import moment from 'moment';
+import { Link } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -110,7 +111,8 @@ const SidebarArticles = (props) => {
       </Typography>
       <Typography variant='caption' color='textPrimary'>
         <i>
-          {props.author.name} - {props.date}
+          {props.author.displayName} -{' '}
+          {moment(props.date).format('Do MMM YYYY')}
         </i>
       </Typography>
     </div>
@@ -135,21 +137,23 @@ const SidebarArticles = (props) => {
             data-aos='fade-up'
             className={classes.gridItem}
           >
-            <CardProduct
-              className={classes.cardProduct}
-              mediaContent={
-                <BlogMediaContent {...item.cover} alt={item.title} />
-              }
-              cardContent={
-                <BlogContent
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  author={item.author}
-                  date={item.date}
-                  tags={item.tags}
-                />
-              }
-            />
+            <Link to={'/single-article/' + item._id}>
+              <CardProduct
+                className={classes.cardProduct}
+                mediaContent={
+                  <BlogMediaContent {...item.cover} alt={item.title} />
+                }
+                cardContent={
+                  <BlogContent
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    author={item.author}
+                    date={item.issueDate}
+                    tags={item.tags}
+                  />
+                }
+              />
+            </Link>
           </Grid>
         ))}
       </Grid>

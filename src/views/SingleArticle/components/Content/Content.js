@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
@@ -6,14 +6,41 @@ import {
   Typography,
   GridList,
   GridListTile,
-  IconButton,
 } from '@material-ui/core';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import TwitterIcon from '@material-ui/icons/Twitter';
-import InstagramIcon from '@material-ui/icons/Instagram';
-import PinterestIcon from '@material-ui/icons/Pinterest';
+
 import { Image } from 'components/atoms';
-import validate from 'validate.js';
+import { withStyles } from '@material-ui/core/styles';
+import Rating from '@material-ui/lab/Rating';
+
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { userSelector } from '../../../../features/user/UserSlice';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+
+import { useSelector, useDispatch } from 'react-redux';
+
+const CREATE_FAV_ARTICLE = gql`
+  mutation createFavArticle($userID: ID!, $articleID: ID!) {
+    addFavArticle(user: $userID, article: $articleID) {
+      _id
+      isFav
+    }
+  }
+`;
+const StyledRating = withStyles({
+  iconFilled: {
+    color: '#ff6d75',
+  },
+  iconHover: {
+    color: '#ff3d47',
+  },
+})(Rating);
+const TOGGLE_FAV_ARTICLE = gql`
+  mutation modifyFavArticle($favArticleID: ID!) {
+    modifyFavArticle(_id: $favArticleID) {
+      isFav
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   section: {
@@ -38,13 +65,35 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Content = (props) => {
-  const { data, className, ...rest } = props;
+  const { favArticle, data, className, ...rest } = props;
   const classes = useStyles();
-
+  const [isUserFav, setIsUserFav] = useState(
+    favArticle ? favArticle.isFav : false
+  );
+  const articleID = data._id;
+  const userID = useSelector(userSelector)._id;
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.up('md'), {
     defaultMatches: true,
   });
+
+  const [addFavArticle, resultAddFav] = useMutation(CREATE_FAV_ARTICLE);
+
+  const [modifyFavArticle, resultModifyFav] = useMutation(TOGGLE_FAV_ARTICLE);
+  const onChangeFav = (e) => {
+    e.persist();
+    favArticle
+      ? modifyFavArticle({ variables: { favArticleID: favArticle._id } })
+          .then((data) => {
+            setIsUserFav(!isUserFav);
+          })
+          .catch((err) => console.log(err))
+      : addFavArticle({ variables: { userID, articleID } })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((err) => console.log(err));
+  };
 
   return (
     <div className={className} {...rest}>
@@ -63,7 +112,7 @@ const Content = (props) => {
 
       {data.content.map((value, index) => {
         return (
-          <div className={classes.section}>
+          <div className={classes.section} key={index}>
             <div className={classes.section}>
               <Typography component='p' variant='h6' color='textPrimary'>
                 {value.text}
@@ -99,20 +148,24 @@ const Content = (props) => {
           </div>
         );
       })}
-      <div>
-        <IconButton className={classes.socialIcon}>
-          <FacebookIcon />
-        </IconButton>
-        <IconButton className={classes.socialIcon}>
-          <InstagramIcon />
-        </IconButton>
-        <IconButton className={classes.socialIcon}>
-          <TwitterIcon />
-        </IconButton>
-        <IconButton className={classes.socialIcon}>
-          <PinterestIcon />
-        </IconButton>
-      </div>
+      {userID ? (
+        <div>
+          <div style={{ marginRight: '2rem', float: 'right' }}>
+            <StyledRating
+              size='large'
+              name='customized-color'
+              max={1}
+              value={parseInt(isUserFav * 1)}
+              onChange={onChangeFav}
+              // getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+              precision={1}
+              icon={<FavoriteIcon fontSize='inherit' />}
+            />
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

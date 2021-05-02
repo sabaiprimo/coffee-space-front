@@ -84,7 +84,11 @@ const Hero = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    window.location.replace('/browse-recipe?searchTitle=' + tempSearchTitle);
+    if (tempSearchTitle) {
+      window.location.href = '/browse-recipe?searchTitle=' + tempSearchTitle;
+    } else {
+      window.location.href = '/browse-recipe';
+    }
   };
   // dispatch(setSearchTitle(data));
 

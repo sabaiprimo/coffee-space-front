@@ -5,8 +5,8 @@ import { Button, Typography, Grid } from '@material-ui/core';
 import { Image } from 'components/atoms';
 import { DescriptionCta } from 'components/molecules';
 import { CardProduct } from 'components/organisms';
-
-const useStyles = makeStyles(theme => ({
+import moment from 'moment';
+const useStyles = makeStyles((theme) => ({
   cardProduct: {
     display: 'flex',
     flexDirection: 'column',
@@ -50,11 +50,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SimilarStories = props => {
+const SimilarStories = (props) => {
   const { data, className, ...rest } = props;
   const classes = useStyles();
 
-  const BlogMediaContent = props => (
+  const BlogMediaContent = (props) => (
     <Image
       {...props}
       className={classes.image}
@@ -62,13 +62,13 @@ const SimilarStories = props => {
     />
   );
 
-  const BlogContent = props => (
+  const BlogContent = (props) => (
     <div>
       <div className={classes.tags}>
         {props.tags.map((item, index) => (
           <Typography
-            variant="overline"
-            color="primary"
+            variant='overline'
+            color='primary'
             className={classes.tag}
             key={index}
           >
@@ -77,21 +77,22 @@ const SimilarStories = props => {
         ))}
       </div>
       <Typography
-        variant="h6"
-        color="textPrimary"
+        variant='h6'
+        color='textPrimary'
         className={classes.blogTitle}
-        align="center"
+        align='center'
       >
         {props.title}
       </Typography>
       <Typography
-        variant="body2"
-        color="textPrimary"
+        variant='body2'
+        color='textPrimary'
         className={classes.author}
-        align="center"
+        align='center'
       >
         <i>
-          {props.author.name} - {props.date}
+          {props.author.displayName} -{' '}
+          {moment(props.date).format('Do MMM YYYY')}
         </i>
       </Typography>
     </div>
@@ -100,9 +101,14 @@ const SimilarStories = props => {
   return (
     <div className={className} {...rest}>
       <DescriptionCta
-        title="Similar stories"
+        title='Similar stories'
         primaryCta={
-          <Button variant="outlined" color="primary" size="large">
+          <Button
+            href='/list-articles'
+            variant='outlined'
+            color='primary'
+            size='large'
+          >
             View all
           </Button>
         }
@@ -113,28 +119,30 @@ const SimilarStories = props => {
           className: classes.title,
         }}
         className={classes.descriptionCta}
-        data-aos="fade-up"
+        data-aos='fade-up'
       />
       <Grid container spacing={2}>
         {data.map((item, index) => (
-          <Grid item xs={12} sm={12} md={4} key={index} data-aos="fade-up">
-            <CardProduct
-              withShadow
-              liftUp
-              className={classes.cardProduct}
-              mediaContent={
-                <BlogMediaContent {...item.cover} alt={item.title} />
-              }
-              cardContent={
-                <BlogContent
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  author={item.author}
-                  date={item.date}
-                  tags={item.tags}
-                />
-              }
-            />
+          <Grid item xs={12} sm={12} md={4} key={index} data-aos='fade-up'>
+            <a href={'/single-article/' + item._id}>
+              <CardProduct
+                withShadow
+                liftUp
+                className={classes.cardProduct}
+                mediaContent={
+                  <BlogMediaContent {...item.cover} alt={item.title} />
+                }
+                cardContent={
+                  <BlogContent
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    author={item.author}
+                    date={item.issueDate}
+                    tags={item.tags}
+                  />
+                }
+              />
+            </a>
           </Grid>
         ))}
       </Grid>
