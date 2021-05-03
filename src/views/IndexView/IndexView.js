@@ -53,7 +53,13 @@ const IndexView = ({ themeMode }) => {
       <BrowseRecipe />
 
       <SectionAlternate>
-        <Features data={queryFeatureArticle.data.featureArticle} />
+        <Features
+          data={
+            queryFeatureArticle.data
+              ? queryFeatureArticle.data.featureArticle
+              : []
+          }
+        />
       </SectionAlternate>
       <Section></Section>
       <Section className={classes.dividerSection}>
