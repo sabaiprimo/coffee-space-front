@@ -13,10 +13,11 @@ import {
   Button,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../../../../../features/user/UserSlice';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-  },
+const useStyles = makeStyles((theme) => ({
+  root: {},
   listItem: {
     flexDirection: 'column',
     alignItems: 'flex-start',
@@ -53,97 +54,108 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SidebarNav = props => {
+const SidebarNav = (props) => {
   const { pages, onClose, className, ...rest } = props;
   const classes = useStyles();
 
-  const landings = pages.landings;
-  const supportedPages = pages.pages;
-  const account = pages.account;
+  const { displayName } = useSelector(userSelector);
 
-  const MenuGroup = props => {
+  const recipes = displayName
+    ? pages.recipes
+    : {
+        title: 'Browse Recipe',
+        id: 'browse-recipe-page',
+        href: '/browse-recipe',
+      };
+  const articles = displayName
+    ? pages.articles
+    : {
+        title: 'Explore Articles',
+        id: 'explore-article-page',
+        href: '/blog-articles',
+      };
+  const account = displayName
+    ? pages.account
+    : {
+        norender: true,
+      };
+
+  const MenuGroup = (props) => {
     const { item } = props;
     return (
       <List disablePadding>
         <ListItem disableGutters>
           <Typography
-            variant="body2"
-            color="primary"
+            variant='body2'
+            color='primary'
             className={classes.menuGroupTitle}
           >
-            {item.groupTitle}
+            {/* {item.groupTitle} */}
           </Typography>
         </ListItem>
-        {item.pages.map((page, i) => (
-          <ListItem disableGutters key={i} className={classes.menuGroupItem}>
+        {item.length > 0 ? (
+          item.map((page, i) => (
+            <ListItem disableGutters key={i} className={classes.menuGroupItem}>
+              <Typography
+                variant='body2'
+                component={'a'}
+                href={page.href}
+                className={clsx(classes.navLink, 'submenu-item')}
+                color='textPrimary'
+                onClick={() => onClose()}
+              >
+                {page.title}
+              </Typography>
+            </ListItem>
+          ))
+        ) : (
+          <ListItem disableGutters className={classes.menuGroupItem}>
             <Typography
-              variant="body2"
+              variant='body2'
               component={'a'}
-              href={page.href}
+              href={item.href}
               className={clsx(classes.navLink, 'submenu-item')}
-              color="textPrimary"
+              color='textPrimary'
               onClick={() => onClose()}
             >
-              {page.title}
+              {item.title}
             </Typography>
           </ListItem>
-        ))}
+        )}
       </List>
     );
   };
 
-  const LandingPages = () => {
-    const { services, apps, web } = landings.children;
+  const RecipePages = () => {
+    const { pages } = recipes;
     return (
       <div className={classes.menu}>
         <div className={classes.menuItem}>
-          <MenuGroup item={services} />
-          <MenuGroup item={apps} />
-        </div>
-        <div className={classes.menuItem}>
-          <MenuGroup item={web} />
+          <MenuGroup item={pages ? pages : recipes} />
         </div>
       </div>
     );
   };
 
-  const SupportedPages = () => {
-    const {
-      career,
-      helpCenter,
-      company,
-      contact,
-      blog,
-      portfolio,
-    } = supportedPages.children;
+  const ArticlePages = () => {
+    const { pages } = articles;
+
     return (
       <div className={classes.menu}>
         <div className={classes.menuItem}>
-          <MenuGroup item={career} />
-          <MenuGroup item={helpCenter} />
-          <MenuGroup item={company} />
-        </div>
-        <div className={classes.menuItem}>
-          <MenuGroup item={contact} />
-          <MenuGroup item={blog} />
-          <MenuGroup item={portfolio} />
+          <MenuGroup item={pages ? pages : articles} />
         </div>
       </div>
     );
   };
 
   const AccountPages = () => {
-    const { settings, signup, signin, password, error } = account.children;
+    const { pages } = account;
+
     return (
       <div className={classes.menu}>
         <div className={classes.menuItem}>
-          <MenuGroup item={settings} />
-          <MenuGroup item={signup} />
-        </div>
-        <div className={classes.menuItem}>
-          <MenuGroup item={signin} />
-          <MenuGroup item={password} />
-          <MenuGroup item={error} />
+          <MenuGroup item={pages ? pages : account} />
         </div>
       </div>
     );
@@ -153,55 +165,60 @@ const SidebarNav = props => {
     <List {...rest} className={clsx(classes.root, className)}>
       <ListItem className={classes.closeIcon} onClick={() => onClose()}>
         <ListItemIcon className={classes.listItemIcon}>
-          <CloseIcon fontSize="small" />
+          <CloseIcon fontSize='small' />
         </ListItemIcon>
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Typography variant="h6" color="textPrimary" gutterBottom>
-          Landings
+        <Typography variant='h6' color='textPrimary' gutterBottom>
+          Recipes
         </Typography>
-        <LandingPages />
+        <RecipePages />
       </ListItem>
       <ListItem className={classes.listItem}>
         <Divider className={classes.divider} />
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Typography variant="h6" color="textPrimary" gutterBottom>
-          Pages
+        <Typography variant='h6' color='textPrimary' gutterBottom>
+          Articles
         </Typography>
-        <SupportedPages />
+        <ArticlePages />
       </ListItem>
       <ListItem className={classes.listItem}>
         <Divider className={classes.divider} />
       </ListItem>
-      <ListItem className={classes.listItem}>
-        <Typography variant="h6" color="textPrimary" gutterBottom>
-          Account
-        </Typography>
-        <AccountPages />
-      </ListItem>
-      <ListItem className={classes.listItem}>
+      {account.expand ? (
+        <ListItem className={classes.listItem}>
+          <Typography variant='h6' color='textPrimary' gutterBottom>
+            Account
+          </Typography>
+          <AccountPages />
+        </ListItem>
+      ) : (
+        ''
+      )}
+
+      {/* <ListItem className={classes.listItem}>
         <Button
-          variant="outlined"
+          variant='outlined'
           fullWidth
-          component="a"
-          href="/documentation"
+          component='a'
+          href='/documentation'
         >
           Documentation
         </Button>
       </ListItem>
       <ListItem className={classes.listItem}>
         <Button
-          variant="contained"
-          color="primary"
+          variant='contained'
+          color='primary'
           fullWidth
-          component="a"
-          target="blank"
-          href="https://material-ui.com/store/items/the-front-landing-page/"
+          component='a'
+          target='blank'
+          href='https://material-ui.com/store/items/the-front-landing-page/'
         >
           Buy Now
         </Button>
-      </ListItem>
+      </ListItem> */}
     </List>
   );
 };

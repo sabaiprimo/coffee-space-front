@@ -40,6 +40,7 @@ const MY_ARTICLES = gql`
       _id
       title
       subtitle
+      headline
       issueDate
       cover {
         src
@@ -56,7 +57,11 @@ const MY_FAV_ARTICLES = gql`
         _id
         title
         subtitle
+        headline
         issueDate
+        author {
+          displayName
+        }
         cover {
           src
         }

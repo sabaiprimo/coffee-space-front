@@ -112,12 +112,12 @@ const Main = ({ children, themeToggler, themeMode }) => {
         themeMode={themeMode}
         themeToggler={themeToggler}
       />
-      {/* <Sidebar
+      <Sidebar
         onClose={handleSidebarClose}
         open={open}
         variant='temporary'
         pages={pages}
-      /> */}
+      />
       <main>
         <Divider />
         {children}

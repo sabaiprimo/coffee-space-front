@@ -151,7 +151,7 @@ const MainForm = (props) => {
 
   const handleSetCover = (file) => {
     if (file.length > 0) {
-      setFile(file);
+      setFile({ file: file });
       setCovImgShow();
     }
   };
@@ -409,7 +409,7 @@ const MainForm = (props) => {
               <Grid item>
                 <p className={classes.fontWeight600}>Content {k + 1}</p>
               </Grid>
-              <Grid item>
+              {/* <Grid item>
                 <IconButton
                   onClick={(e) => handleDeleteContent(k)}
                   edge='end'
@@ -417,7 +417,7 @@ const MainForm = (props) => {
                 >
                   <DeleteIcon />
                 </IconButton>
-              </Grid>
+              </Grid> */}
             </Grid>
 
             <TextField
@@ -474,8 +474,8 @@ const MainForm = (props) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (filesObj.file.length == 0 && !covImgShow) {
-      alert('Please add some images');
+    if (filesObj.file.length === 0 && !covImgShow) {
+      alert('You image or content is missing');
     }
     if (formState.isValid && (filesObj.file.length > 0 || covImgShow)) {
       const file = Array.from(filesObj.file);
@@ -544,7 +544,6 @@ const MainForm = (props) => {
           // window.location.reload();
         });
     }
-
     setFormState((formState) => ({
       ...formState,
       touched: {

@@ -126,13 +126,25 @@ const MyArticle = (props) => {
                       </a>
                     </ListItemAvatar>
                     <ListItemText primary='Title' secondary={item.title} />
-                    <ListItemText
-                      primary='Subtitle'
-                      secondary={moment(item.issueDate).format('Do MMM YYYY')}
-                    />
+                    <div
+                      style={{
+                        width: '25%',
+                      }}
+                    >
+                      <ListItemText
+                        primary='Headline'
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          marginRight: '1rem',
+                        }}
+                        secondary={item.headline}
+                      />
+                    </div>
+
                     <ListItemText
                       primary='Publish Date'
-                      secondary={item.issueDate}
+                      secondary={moment(item.issueDate).format('Do MMM YYYY')}
                     />
 
                     <IconButton

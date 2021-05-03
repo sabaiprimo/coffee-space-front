@@ -102,45 +102,83 @@ const FavArticle = (props) => {
         <Grid item xs={12}>
           <Divider />
         </Grid>
-
         <Grid item xs={12} data-aos='fade-up'>
           {data.length > 0 ? (
-            data.map((data, idx) => {
+            data.map((item, idx) => {
               return (
                 <CardBase className={classes.cardBase} liftUp key={idx}>
                   <ListItem disableGutters className={classes.listItem}>
-                    <ListItemAvatar className={classes.listItemAvatar}>
-                      <img
-                        width='100px'
-                        // height='100'
-                        className={classes.avatar}
-                        src={data.article.cover.src}
-                      />
-                    </ListItemAvatar>
-
-                    <ListItemText
-                      primary='Title'
-                      secondary={data.article.title}
-                    />
-                    <ListItemText
-                      primary='Subtitle'
-                      secondary={moment(data.article.issueDate).format(
-                        'Do MMM YYYY'
-                      )}
-                    />
-
-                    <ListItemText
-                      primary='Publish Date'
-                      secondary={data.article.issueDate}
-                    />
-
-                    <IconButton
-                      onClick={(e) => onClickFav(e, data._id)}
-                      edge='end'
-                      aria-label='deleteFav'
+                    <div
+                      style={{
+                        width: '20%',
+                      }}
                     >
-                      <FavoriteIcon style={{ color: 'red' }} />
-                    </IconButton>
+                      <ListItemAvatar className={classes.listItemAvatar}>
+                        <img
+                          // width='100px'
+                          // height='100'
+                          className={classes.avatar}
+                          src={item.article.cover.src}
+                        />
+                      </ListItemAvatar>
+                    </div>
+
+                    <div
+                      style={{
+                        width: '20%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        marginRight: '1rem',
+                      }}
+                    >
+                      <ListItemText
+                        primary='Title'
+                        secondary={item.article.title}
+                      />
+                    </div>
+
+                    <div
+                      style={{
+                        width: '20%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        marginRight: '1rem',
+                      }}
+                    >
+                      <ListItemText
+                        primary='Author'
+                        secondary={item.article.author.displayName}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        width: '20%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <ListItemText
+                        primary='Publish Date'
+                        secondary={moment(item.article.issueDate).format(
+                          'Do MMM YYYY'
+                        )}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        width: '20%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <IconButton
+                        onClick={(e) => onClickFav(e, item._id)}
+                        edge='end'
+                        aria-label='deleteFav'
+                      >
+                        <FavoriteIcon style={{ color: 'red' }} />
+                      </IconButton>
+                    </div>
                   </ListItem>
                 </CardBase>
               );
@@ -149,7 +187,8 @@ const FavArticle = (props) => {
             <Typography>You don't have any favorite article yet</Typography>
           )}
         </Grid>
-        <Grid container justify='flex-end'>
+
+        <Grid item container justify='flex-end'>
           <Pagination
             count={totalPages}
             page={currentPage}

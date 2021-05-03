@@ -232,7 +232,7 @@ const Recipes = (props) => {
                   {item.title}
                 </Typography>
               </Grid>
-              <Grid item container justify='left' alignItems='center' xs={12}>
+              <Grid item container alignItems='center' xs={12}>
                 <Avatar
                   // className={classes.courseCardReviewAvatar}
                   alt={item.author.displayName}
