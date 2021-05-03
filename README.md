@@ -74,17 +74,27 @@ This project is made using these packages
 
 ## Pages
 
-Login Page
+### Login Page
+![img](examplePage/signin.png)
 
-Signup Page
+### Signup Page
+![img2](examplePage/signup.png)
 
-Browse Recipe Page
+### Browse Recipe Page
+![img3](examplePage/browserecipe.png)
 
-Browse Article Page
+### Browse Article Page
+![img4](examplePage/browsearticle.png)
 
-Single Recipe Page
+### Single Recipe Page
+![img5](examplePage/single_recipe_head.png)
+![img6](examplePage/single_recipe.png)
 
-Single Article Page
+### Single Article Page
+![img7](examplePage/browsearticle.png)
+
+### Profile Page
+![img8](examplePage/profile.png)
 
 
 
