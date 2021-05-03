@@ -82,6 +82,7 @@ const SidebarNav = (props) => {
 
   const MenuGroup = (props) => {
     const { item } = props;
+
     return (
       <List disablePadding>
         <ListItem disableGutters>
@@ -160,7 +161,12 @@ const SidebarNav = (props) => {
       </div>
     );
   };
-
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem('token');
+    alert('User has logged out');
+    window.location.replace('/');
+  };
   return (
     <List {...rest} className={clsx(classes.root, className)}>
       <ListItem className={classes.closeIcon} onClick={() => onClose()}>
@@ -196,29 +202,39 @@ const SidebarNav = (props) => {
       ) : (
         ''
       )}
-
-      {/* <ListItem className={classes.listItem}>
-        <Button
-          variant='outlined'
-          fullWidth
-          component='a'
-          href='/documentation'
-        >
-          Documentation
-        </Button>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          variant='contained'
-          color='primary'
-          fullWidth
-          component='a'
-          target='blank'
-          href='https://material-ui.com/store/items/the-front-landing-page/'
-        >
-          Buy Now
-        </Button>
-      </ListItem> */}
+      {!displayName ? (
+        <>
+          {' '}
+          <ListItem className={classes.listItem}>
+            <Button variant='outlined' fullWidth component='a' href='/signin'>
+              Log in
+            </Button>
+          </ListItem>
+          <ListItem className={classes.listItem}>
+            <Button
+              variant='contained'
+              color='primary'
+              fullWidth
+              component='a'
+              href='/signup'
+            >
+              Sign up
+            </Button>
+          </ListItem>
+        </>
+      ) : (
+        <ListItem className={classes.listItem}>
+          <Button
+            variant='contained'
+            component='a'
+            target='blank'
+            onClick={handleLogout}
+            className={classes.listItemButton}
+          >
+            LOG OUT
+          </Button>
+        </ListItem>
+      )}
     </List>
   );
 };

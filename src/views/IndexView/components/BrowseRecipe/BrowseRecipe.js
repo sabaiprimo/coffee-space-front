@@ -87,7 +87,11 @@ const BrowseRecipe = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    window.location.replace('/browse-recipe?searchTitle=' + tempSearchTitle);
+    window.location.replace(
+      tempSearchTitle
+        ? '/browse-recipe?searchTitle=' + tempSearchTitle
+        : '/browse-recipe'
+    );
   };
   return (
     <div className={clsx(classes.root, className)} {...rest}>

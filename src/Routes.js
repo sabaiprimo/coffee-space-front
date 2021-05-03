@@ -39,7 +39,10 @@ const GET_USER_PROFILE = gql`
 const Routes = () => {
   const dispatch = useDispatch();
   const { loading, error, data } = useQuery(GET_USER_PROFILE);
-  if (loading) return 'Loading...';
+  if (loading) return <p>Loading..</p>;
+  // if (error) {
+  //   console.log(error);
+  // }
   if (data) {
     dispatch(setUserProfile(data));
   }
