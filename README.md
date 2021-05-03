@@ -72,9 +72,19 @@ This project is made using these packages
     ├── LICENSE
     └── README.md
 
-## Sources Components
+## Pages
 
+Login Page
 
+Signup Page
+
+Browse Recipe Page
+
+Browse Article Page
+
+Single Recipe Page
+
+Single Article Page
 
 
 
